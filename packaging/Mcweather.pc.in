@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/libDwmMcweather
+
+Name: Mcweather
+Description: Weather cache and server
+Version: @TAGVERSION@
+Requires: libDwmCredence
+Libs: @PTHREADLDFLAGS@ -L${libdir} -lDwmMcweather -lDwmCredence -lDwm @BZ2LIB@ @BOOSTLIBS@ @ZLIB@ @KVMLIB@ @TERMCAPLIB@ @OSLIBS@
+Cflags: @PTHREADCXXFLAGS@ -I${includedir} @BOOSTINC@

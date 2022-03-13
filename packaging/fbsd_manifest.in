@@ -1,0 +1,14 @@
+name: "Mcweather"
+version: "@TAGVERSION@"
+origin: "devel/Mcweather"
+prefix: "@prefix@"
+www: "http://www.rfdm.com"
+maintainer: "dwmcrobb@me.com"
+comment: "Weather cache and server"
+desc: "Weather cache and server."
+licenselogic: "single"
+licenses: ["BSD"]
+categories: ["devel"]
+scripts: {
+  post-install: "#!/bin/sh\nldconfig @prefix@/lib\n"
+}
