@@ -10,6 +10,7 @@ DWMINCS          = @DWMINCS@
 DWMLIBS          = @DWMLIBS@
 INSTALLPREFIX    = @prefix@
 OSNAME           = @OSNAME@
+POCOLIBS         = -lPocoNet -lPocoNetSSL -lPocoCrypto -lPocoUtil -lPocoXML -lPocoJSON -lPocoFoundation
 PTHREADCXXFLAGS  = @PTHREADCXXFLAGS@
 SODIUMLIB        = -lsodium
 TARDIR		 = @TARDIR@@prefix@
