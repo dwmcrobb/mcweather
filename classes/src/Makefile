@@ -1,7 +1,8 @@
 include ../../Makefile.vars
 
 ALLINC       = -I../include ${CREDENCEINCS}
-OBJFILESNP = DwmMcweatherCurrentConditions.o
+OBJFILESNP   = DwmMcweatherCurrentConditions.o \
+               DwmMcweatherPointInfo.o
 OBJFILES     = $(OBJFILESNP:%=../obj/%)
 OBJDEPS      = $(OBJFILESNP:%.o=deps/%_deps)
 
