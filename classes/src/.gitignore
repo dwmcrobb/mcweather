@@ -1,1 +1,4 @@
 *~
+DwmMcweatherConfigLex.cc
+DwmMcweatherConfigParse.cc
+DwmMcweatherConfigParse.hh

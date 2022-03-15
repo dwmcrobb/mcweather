@@ -1,9 +1,15 @@
 include ../../Makefile.vars
 
 ALLINC       = -I../include ${CREDENCEINCS}
-OBJFILESNP   = DwmMcweatherCurrentConditions.o \
+OBJFILESNP   = DwmMcweatherCache.o \
+               DwmMcweatherConfigLex.o \
+               DwmMcweatherConfigParse.o \
+               DwmMcweatherCurrentConditions.o \
                DwmMcweatherPointInfo.o \
+               DwmMcweatherServiceConfig.o \
+               DwmMcweatherTCPAddress.o \
                DwmMcweatherUtils.o \
+               DwmMcweatherWeatherFetcher.o \
                DwmMcweatherWebUtils.o
 OBJFILES     = $(OBJFILESNP:%=../obj/%)
 OBJDEPS      = $(OBJFILESNP:%.o=deps/%_deps)
@@ -31,3 +37,15 @@ endif
 
 ../obj/%.o: %.cc deps/%_deps
 	${CXX} ${CXXFLAGS} ${PTHREADCXXFLAGS} ${ALLINC} -c $< -o $@
+
+DwmMcweatherConfigParse.hh: DwmMcweatherConfigParse.cc
+
+DwmMcweatherConfigParse.cc: DwmMcweatherConfigParse.y
+	bison -d -o$@ $<
+
+DwmMcweatherConfigLex.cc: DwmMcweatherConfigLex.lex DwmMcweatherConfigParse.hh
+	flex -o$@ $<
+
+clean::
+	rm -f ${OBJFILES} DwmMcweatherConfigParse.cc DwmMcweatherConfigParse.hh
+	rm -f DwmMcweatherConfigLex.cc
