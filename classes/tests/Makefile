@@ -1,8 +1,7 @@
 include ../../Makefile.vars
 
 OBJFILES = TestConfig.o \
-	   TestUtils.o \
-	   TestWeatherPeriodForecast.o
+	   TestPeriodForecast.o
 OBJDEPS	 = $(OBJFILES:%.o=deps/%_deps)
 TESTS	 = $(OBJFILES:%.o=%)
 CXXFLAGS += -g

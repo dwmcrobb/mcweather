@@ -1,0 +1,275 @@
+{
+    "@context": [
+        "https://raw.githubusercontent.com/geojson/geojson-ld/master/contexts/geojson-base.jsonld",
+        {
+            "@vocab": "https://api.weather.gov/ontology#",
+            "geo": "http://www.opengis.net/ont/geosparql#",
+            "unit": "http://codes.wmo.int/common/unit/",
+            "wx": "https://api.weather.gov/ontology#"
+        }
+    ],
+    "geometry": {
+        "geometries": [
+            {
+                "coordinates": [
+                    -83.4164363,
+                    42.6623076
+                ],
+                "type": "Point"
+            },
+            {
+                "coordinates": [
+                    [
+                        [
+                            -83.429879,
+                            42.6740422
+                        ],
+                        [
+                            -83.4323938,
+                            42.652422800000004
+                        ],
+                        [
+                            -83.4029968,
+                            42.6505711
+                        ],
+                        [
+                            -83.4004755,
+                            42.672190300000004
+                        ],
+                        [
+                            -83.429879,
+                            42.6740422
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            }
+        ],
+        "type": "GeometryCollection"
+    },
+    "properties": {
+        "elevation": {
+            "unitCode": "unit:m",
+            "value": 295.9608
+        },
+        "forecastGenerator": "BaselineForecastGenerator",
+        "generatedAt": "2020-05-09T21:49:54+00:00",
+        "periods": [
+            {
+                "detailedForecast": "Isolated snow showers. Partly sunny, with a high near 48. West northwest wind around 17 mph, with gusts as high as 35 mph.",
+                "endTime": "2020-05-09T18:00:00-04:00",
+                "icon": "https://api.weather.gov/icons/land/day/snow?size=medium",
+                "isDaytime": true,
+                "name": "This Afternoon",
+                "number": 1,
+                "shortForecast": "Isolated Snow Showers",
+                "startTime": "2020-05-09T17:00:00-04:00",
+                "temperature": 48,
+                "temperatureTrend": null,
+                "temperatureUnit": "F",
+                "windDirection": "WNW",
+                "windSpeed": "17 mph"
+            },
+            {
+                "detailedForecast": "Isolated snow showers before 7pm. Partly cloudy, with a low around 36. West wind 3 to 16 mph, with gusts as high as 33 mph.",
+                "endTime": "2020-05-10T06:00:00-04:00",
+                "icon": "https://api.weather.gov/icons/land/night/snow/sct?size=medium",
+                "isDaytime": false,
+                "name": "Tonight",
+                "number": 2,
+                "shortForecast": "Isolated Snow Showers then Partly Cloudy",
+                "startTime": "2020-05-09T18:00:00-04:00",
+                "temperature": 36,
+                "temperatureTrend": null,
+                "temperatureUnit": "F",
+                "windDirection": "W",
+                "windSpeed": "3 to 16 mph"
+            },
+            {
+                "detailedForecast": "A chance of rain between 8am and noon, then rain likely and a slight chance of thunderstorms. Mostly cloudy. High near 55, with temperatures falling to around 53 in the afternoon. West southwest wind 2 to 13 mph, with gusts as high as 21 mph. Chance of precipitation is 70%. New rainfall amounts between a tenth and quarter of an inch possible.",
+                "endTime": "2020-05-10T18:00:00-04:00",
+                "icon": "https://api.weather.gov/icons/land/day/rain,40/tsra,70?size=medium",
+                "isDaytime": true,
+                "name": "Sunday",
+                "number": 3,
+                "shortForecast": "Rain Likely",
+                "startTime": "2020-05-10T06:00:00-04:00",
+                "temperature": 55,
+                "temperatureTrend": "falling",
+                "temperatureUnit": "F",
+                "windDirection": "WSW",
+                "windSpeed": "2 to 13 mph"
+            },
+            {
+                "detailedForecast": "Rain likely and a slight chance of thunderstorms before 2am. Mostly cloudy, with a low around 33. North wind 6 to 10 mph. Chance of precipitation is 70%. New rainfall amounts between a quarter and half of an inch possible.",
+                "endTime": "2020-05-11T06:00:00-04:00",
+                "icon": "https://api.weather.gov/icons/land/night/tsra,70/tsra,40?size=medium",
+                "isDaytime": false,
+                "name": "Sunday Night",
+                "number": 4,
+                "shortForecast": "Rain Likely",
+                "startTime": "2020-05-10T18:00:00-04:00",
+                "temperature": 33,
+                "temperatureTrend": null,
+                "temperatureUnit": "F",
+                "windDirection": "N",
+                "windSpeed": "6 to 10 mph"
+            },
+            {
+                "detailedForecast": "Partly sunny, with a high near 49. Northwest wind around 13 mph, with gusts as high as 22 mph.",
+                "endTime": "2020-05-11T18:00:00-04:00",
+                "icon": "https://api.weather.gov/icons/land/day/bkn?size=medium",
+                "isDaytime": true,
+                "name": "Monday",
+                "number": 5,
+                "shortForecast": "Partly Sunny",
+                "startTime": "2020-05-11T06:00:00-04:00",
+                "temperature": 49,
+                "temperatureTrend": null,
+                "temperatureUnit": "F",
+                "windDirection": "NW",
+                "windSpeed": "13 mph"
+            },
+            {
+                "detailedForecast": "Mostly clear, with a low around 29.",
+                "endTime": "2020-05-12T06:00:00-04:00",
+                "icon": "https://api.weather.gov/icons/land/night/few?size=medium",
+                "isDaytime": false,
+                "name": "Monday Night",
+                "number": 6,
+                "shortForecast": "Mostly Clear",
+                "startTime": "2020-05-11T18:00:00-04:00",
+                "temperature": 29,
+                "temperatureTrend": null,
+                "temperatureUnit": "F",
+                "windDirection": "WNW",
+                "windSpeed": "3 to 13 mph"
+            },
+            {
+                "detailedForecast": "Mostly sunny, with a high near 54.",
+                "endTime": "2020-05-12T18:00:00-04:00",
+                "icon": "https://api.weather.gov/icons/land/day/sct?size=medium",
+                "isDaytime": true,
+                "name": "Tuesday",
+                "number": 7,
+                "shortForecast": "Mostly Sunny",
+                "startTime": "2020-05-12T06:00:00-04:00",
+                "temperature": 54,
+                "temperatureTrend": null,
+                "temperatureUnit": "F",
+                "windDirection": "W",
+                "windSpeed": "3 to 14 mph"
+            },
+            {
+                "detailedForecast": "Mostly clear, with a low around 32.",
+                "endTime": "2020-05-13T06:00:00-04:00",
+                "icon": "https://api.weather.gov/icons/land/night/few?size=medium",
+                "isDaytime": false,
+                "name": "Tuesday Night",
+                "number": 8,
+                "shortForecast": "Mostly Clear",
+                "startTime": "2020-05-12T18:00:00-04:00",
+                "temperature": 32,
+                "temperatureTrend": null,
+                "temperatureUnit": "F",
+                "windDirection": "WNW",
+                "windSpeed": "2 to 13 mph"
+            },
+            {
+                "detailedForecast": "Sunny, with a high near 60.",
+                "endTime": "2020-05-13T18:00:00-04:00",
+                "icon": "https://api.weather.gov/icons/land/day/few?size=medium",
+                "isDaytime": true,
+                "name": "Wednesday",
+                "number": 9,
+                "shortForecast": "Sunny",
+                "startTime": "2020-05-13T06:00:00-04:00",
+                "temperature": 60,
+                "temperatureTrend": null,
+                "temperatureUnit": "F",
+                "windDirection": "W",
+                "windSpeed": "2 to 6 mph"
+            },
+            {
+                "detailedForecast": "A chance of rain after 8pm. Mostly cloudy, with a low around 43.",
+                "endTime": "2020-05-14T06:00:00-04:00",
+                "icon": "https://api.weather.gov/icons/land/night/rain?size=medium",
+                "isDaytime": false,
+                "name": "Wednesday Night",
+                "number": 10,
+                "shortForecast": "Chance Rain",
+                "startTime": "2020-05-13T18:00:00-04:00",
+                "temperature": 43,
+                "temperatureTrend": null,
+                "temperatureUnit": "F",
+                "windDirection": "S",
+                "windSpeed": "5 mph"
+            },
+            {
+                "detailedForecast": "Rain likely. Mostly cloudy, with a high near 62.",
+                "endTime": "2020-05-14T18:00:00-04:00",
+                "icon": "https://api.weather.gov/icons/land/day/rain?size=medium",
+                "isDaytime": true,
+                "name": "Thursday",
+                "number": 11,
+                "shortForecast": "Rain Likely",
+                "startTime": "2020-05-14T06:00:00-04:00",
+                "temperature": 62,
+                "temperatureTrend": null,
+                "temperatureUnit": "F",
+                "windDirection": "SSE",
+                "windSpeed": "5 to 12 mph"
+            },
+            {
+                "detailedForecast": "Rain likely. Mostly cloudy, with a low around 52.",
+                "endTime": "2020-05-15T06:00:00-04:00",
+                "icon": "https://api.weather.gov/icons/land/night/rain?size=medium",
+                "isDaytime": false,
+                "name": "Thursday Night",
+                "number": 12,
+                "shortForecast": "Rain Likely",
+                "startTime": "2020-05-14T18:00:00-04:00",
+                "temperature": 52,
+                "temperatureTrend": null,
+                "temperatureUnit": "F",
+                "windDirection": "S",
+                "windSpeed": "8 mph"
+            },
+            {
+                "detailedForecast": "Rain likely. Mostly cloudy, with a high near 70.",
+                "endTime": "2020-05-15T18:00:00-04:00",
+                "icon": "https://api.weather.gov/icons/land/day/rain?size=medium",
+                "isDaytime": true,
+                "name": "Friday",
+                "number": 13,
+                "shortForecast": "Rain Likely",
+                "startTime": "2020-05-15T06:00:00-04:00",
+                "temperature": 70,
+                "temperatureTrend": null,
+                "temperatureUnit": "F",
+                "windDirection": "W",
+                "windSpeed": "6 to 9 mph"
+            },
+            {
+                "detailedForecast": "A chance of rain. Mostly cloudy, with a low around 48.",
+                "endTime": "2020-05-16T06:00:00-04:00",
+                "icon": "https://api.weather.gov/icons/land/night/rain?size=medium",
+                "isDaytime": false,
+                "name": "Friday Night",
+                "number": 14,
+                "shortForecast": "Chance Rain",
+                "startTime": "2020-05-15T18:00:00-04:00",
+                "temperature": 48,
+                "temperatureTrend": null,
+                "temperatureUnit": "F",
+                "windDirection": "N",
+                "windSpeed": "5 to 8 mph"
+            }
+        ],
+        "units": "us",
+        "updateTime": "2020-05-09T16:39:59+00:00",
+        "updated": "2020-05-09T16:39:59+00:00",
+        "validTimes": "2020-05-09T10:00:00+00:00/P8DT2H"
+    },
+    "type": "Feature"
+}
