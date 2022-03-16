@@ -41,6 +41,7 @@
 
 #include <ctime>
 
+#include "DwmStreamIO.hh"
 #include "DwmMcweatherPeriodForecast.hh"
 
 namespace Dwm {
@@ -200,6 +201,69 @@ namespace Dwm {
     string PeriodForecast::DetailedForecast() const
     {
       return _detailedForecast;
+    }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    std::istream & PeriodForecast::Read(std::istream & is)
+    {
+      if (is) {
+        time_t  t;
+        if (StreamIO::Read(is, t)) {
+          _startTime = chrono::system_clock::from_time_t(t);
+          if (StreamIO::Read(is, t)) {
+            _endTime = chrono::system_clock::from_time_t(t);
+            if (StreamIO::Read(is, _name)) {
+              if (StreamIO::Read(is, _isDayTime)) {
+                if (StreamIO::Read(is, _temperature)) {
+                  if (StreamIO::Read(is, _temperatureUnit)) {
+                    if (StreamIO::Read(is, _windSpeed)) {
+                      if (StreamIO::Read(is, _windDirection)) {
+                        if (StreamIO::Read(is, _shortForecast)) {
+                          StreamIO::Read(is, _detailedForecast);
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      return is;
+    }
+    
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    std::ostream & PeriodForecast::Write(std::ostream & os) const
+    {
+      if (os) {
+        time_t  t = chrono::system_clock::to_time_t(_startTime);
+        if (StreamIO::Write(os, t)) {
+          t = chrono::system_clock::to_time_t(_endTime);
+          if (StreamIO::Write(os, t)) {
+            if (StreamIO::Write(os, _name)) {
+              if (StreamIO::Write(os, _isDayTime)) {
+                if (StreamIO::Write(os, _temperature)) {
+                  if (StreamIO::Write(os, _temperatureUnit)) {
+                    if (StreamIO::Write(os, _windSpeed)) {
+                      if (StreamIO::Write(os, _windDirection)) {
+                        if (StreamIO::Write(os, _shortForecast)) {
+                          StreamIO::Write(os, _detailedForecast);
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      return os;
     }
 
     //------------------------------------------------------------------------

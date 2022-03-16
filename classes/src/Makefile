@@ -6,6 +6,7 @@ OBJFILESNP   = DwmMcweatherCache.o \
                DwmMcweatherConfigParse.o \
                DwmMcweatherCurrentConditions.o \
                DwmMcweatherPeriodForecast.o \
+               DwmMcweatherPeriodForecasts.o \
                DwmMcweatherPointInfo.o \
                DwmMcweatherServiceConfig.o \
                DwmMcweatherTCPAddress.o \

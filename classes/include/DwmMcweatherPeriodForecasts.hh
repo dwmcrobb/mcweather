@@ -1,7 +1,7 @@
 //===========================================================================
 // @(#) $DwmPath$
 //===========================================================================
-//  Copyright (c) Daniel W. McRobb 2020
+//  Copyright (c) Daniel W. McRobb 2022
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -34,67 +34,45 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmMcweatherPeriodForecast.hh
+//!  \file DwmMcweatherPeriodForecasts.hh
 //!  \author Daniel W. McRobb
-//!  \brief Dwm::Mcweather::PeriodForecast class declaration
+//!  \brief NOT YET DOCUMENTED
 //---------------------------------------------------------------------------
 
-#ifndef _DWMMCWEATHERPERIODFORECAST_HH_
-#define _DWMMCWEATHERPERIODFORECAST_HH_
+#ifndef _DWMMCWEATHERPERIODFORECASTS_HH_
+#define _DWMMCWEATHERPERIODFORECASTS_HH_
 
-#include <chrono>
-#include <string>
-
+#include <vector>
 #include <nlohmann/json.hpp>
 
 #include "DwmStreamIOCapable.hh"
+#include "DwmMcweatherPeriodForecast.hh"
 
 namespace Dwm {
 
   namespace Mcweather {
-      
+
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    class PeriodForecast
+    class PeriodForecasts
       : public StreamIOCapable
     {
     public:
-      PeriodForecast() = default;
-      PeriodForecast(const PeriodForecast &) = default;
-      PeriodForecast & operator = (const PeriodForecast &) = default;
-      PeriodForecast(const nlohmann::json & j);
-      std::chrono::system_clock::time_point StartTime() const;
-      std::chrono::system_clock::time_point EndTime() const;
-      std::string Name() const;
-      bool IsDayTime() const;
-      int Temperature() const;
-      char TemperatureUnit() const;
-      std::string WindSpeed() const;
-      std::string WindDirection() const;
-      std::string ShortForecast() const;
-      std::string DetailedForecast() const;
-
+      PeriodForecasts(nlohmann::json forecasts);
+      
+      const std::vector<PeriodForecast> & Forecasts() const
+      { return _forecasts; }
+      
       std::istream & Read(std::istream & is) override;
       std::ostream & Write(std::ostream & os) const override;
-      
+
     private:
-      std::chrono::system_clock::time_point  _startTime;
-      std::chrono::system_clock::time_point  _endTime;
-      std::string                            _name;
-      bool                                   _isDayTime;
-      int                                    _temperature;
-      char                                   _temperatureUnit;
-      std::string                            _windSpeed;
-      std::string                            _windDirection;
-      std::string                            _shortForecast;
-      std::string                            _detailedForecast;
-        
-      void Clear();
+      std::vector<PeriodForecast>  _forecasts;
     };
-      
+    
   }  // namespace Mcweather
 
 }  // namespace Dwm
 
-#endif  // _DWMMCWEATHERPERIODFORECAST_HH_
+#endif  // _DWMMCWEATHERPERIODFORECASTS_HH_
