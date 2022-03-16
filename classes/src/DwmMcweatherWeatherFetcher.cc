@@ -43,8 +43,8 @@
 #include <sstream>
 
 #include "DwmSysLogger.hh"
-#include "DwmMcweatherUtils.hh"
 #include "DwmMcweatherCache.hh"
+#include "DwmMcweatherCurrentConditions.hh"
 #include "DwmMcweatherUtils.hh"
 #include "DwmMcweatherWebUtils.hh"
 #include "DwmMcweatherWeatherFetcher.hh"
@@ -242,6 +242,7 @@ namespace Dwm {
 #if 0
                 emit currentConditions(0, wcc);
 #endif
+                Syslog(LOG_INFO, "Got current conditions");
                 break;
               }
               ++stit;

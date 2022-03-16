@@ -43,7 +43,6 @@
 #ifndef _DWMMCWEATHERCURRENTCONDITIONS_HH_
 #define _DWMMCWEATHERCURRENTCONDITIONS_HH_
 
-
 #include <string>
 #include <nlohmann/json.hpp>
 
