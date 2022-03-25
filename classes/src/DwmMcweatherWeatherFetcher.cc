@@ -60,7 +60,8 @@ namespace Dwm {
     //------------------------------------------------------------------------
     WeatherFetcher::WeatherFetcher(const Config & config)
         : _config(config), _run(false), _runmtx(),
-          _runcv(), _thread(), _lastFetchedForecast(0)
+          _runcv(), _thread(), _lastFetchedForecast(0),
+          _cache(_config.CacheDirectory(), _config.Weather())
     {
     }
 
@@ -107,11 +108,31 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    bool WeatherFetcher::GetForecasts(float latitude, float longitude)
+    bool WeatherFetcher::GetHourlyForecasts()
     {
       bool  rc = false;
       PointInfo  pointInfo;
-      if (Cache::GetPointInfo(latitude, longitude, pointInfo)) {
+      if (_cache.GetPointInfo(pointInfo)) {
+        nlohmann::json  json;
+        if (WebUtils::GetJson(pointInfo.HourlyForecastURI(), json)) {
+          ofstream  os(_cache.PointCacheDir() + '/' + "hourlyForecasts");
+          if (os) {
+            os << json.dump(3) << '\n';
+            rc = true;
+          }
+        }
+      }
+      return rc;
+    }
+    
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool WeatherFetcher::GetForecasts()
+    {
+      bool  rc = false;
+      PointInfo  pointInfo;
+      if (_cache.GetPointInfo(pointInfo)) {
         nlohmann::json  json;
         if (WebUtils::GetJson(pointInfo.ForecastURI(), json)) {
           if (json.is_object()) {
@@ -119,14 +140,21 @@ namespace Dwm {
             if ((props != json.end()) && props->is_object()) {
               auto  periods = props->find("periods");
               if ((periods != props->end()) && periods->is_array()) {
-#if 0
-                emit newForecasts(*periods);
-                Syslog(LOG_DEBUG, "Emitted period forecasts");
-#endif
+                PeriodForecasts  periodForecasts(json);
+                _cache.SavePeriodForecasts(periodForecasts);
                 SaveForecast(json);
                 rc = true;
               }
+              else {
+                Syslog(LOG_ERR, "Failed to find periods in forecast");
+              }
             }
+            else {
+              Syslog(LOG_ERR, "Failed to find properties in forecast");
+            }
+          }
+          else {
+            Syslog(LOG_ERR, "forecast not a JSON object");
           }
         }
       }
@@ -213,15 +241,13 @@ namespace Dwm {
       Syslog(LOG_INFO, "WeatherFetcher thread started");
       while (keepRunning) {
         if (cycles % 4 == 0) {
-          if (GetForecasts(_config.Weather().Latitude(),
-                           _config.Weather().Longitude())) {
+          if (GetForecasts()) {
             _lastFetchedForecast = time((time_t *)0);
+            GetHourlyForecasts();
           }
         }
         vector<pair<string,string>>  obsStations;
-        if (Cache::GetObservationStations(_config.Weather().Latitude(),
-                                          _config.Weather().Longitude(),
-                                          obsStations)) {
+        if (_cache.GetObservationStations(obsStations)) {
           int  station = 0;
           // set<string>  stations;
           vector<string>  stations;
@@ -235,14 +261,14 @@ namespace Dwm {
             }
           }
           if (! stations.empty()) {
+            bool  cacheUpdated = false;
             CurrentConditions  wcc;
             auto  stit = stations.begin();
             while (stit != stations.end()) {
               if (Utils::GetCurrentConditions(*stit, wcc)) {
-#if 0
-                emit currentConditions(0, wcc);
-#endif
-                Syslog(LOG_INFO, "Got current conditions");
+                cacheUpdated |= _cache.SetConditions(wcc);
+                Syslog(LOG_INFO, "Got current conditions for %s",
+                       wcc.Station().c_str());
                 break;
               }
               ++stit;
@@ -251,13 +277,16 @@ namespace Dwm {
               ++stit;
               while (stit != stations.end()) {
                 if (Utils::GetCurrentConditions(*stit, wcc)) {
-#if 0
-                  emit currentConditions(1, wcc);
-#endif
+                  cacheUpdated |= _cache.SetConditions(wcc);
+                  Syslog(LOG_INFO, "Got current conditions for %s",
+                         wcc.Station().c_str());
                   break;
                 }
                 ++stit;
               }
+            }
+            if (cacheUpdated) {
+              _cache.SaveCurrentConditions();
             }
           }
         }

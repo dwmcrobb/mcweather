@@ -40,6 +40,7 @@
 //---------------------------------------------------------------------------
 
 #include "DwmStreamIO.hh"
+#include "DwmSysLogger.hh"
 #include "DwmMcweatherPeriodForecasts.hh"
 
 namespace Dwm {
@@ -52,14 +53,17 @@ namespace Dwm {
     PeriodForecasts::PeriodForecasts(nlohmann::json json)
     {
       if (json.is_object()) {
-        auto  props = json.find("properties");
-        if ((props != json.end()) && props->is_object()) {
-          auto  periods = props->find("periods");
-          if ((periods != props->end()) && periods->is_array()) {
-            for (const auto & period : *periods) {
+        nlohmann::json::json_pointer  p("/properties/periods");
+        try {
+          auto  periods = json.at(p);
+          if (periods.is_array()) {
+            for (const auto & period : periods) {
               _forecasts.push_back(PeriodForecast(period));
             }
           }
+        }
+        catch (...) {
+          Syslog(LOG_ERR, "Failed to find properties/periods");
         }
       }
     }

@@ -68,6 +68,9 @@ namespace Dwm {
       const std::string & QualityControl() const;
       std::istream & Read(std::istream & is) override;
       std::ostream & Write(std::ostream & os) const override;
+
+      bool operator == (const CurrentCondition & cc) const;
+      bool operator != (const CurrentCondition & cc) const;
       
     private:
       int          _value;
@@ -97,6 +100,9 @@ namespace Dwm {
 
       std::istream & Read(std::istream & is) override;
       std::ostream & Write(std::ostream & os) const override;
+
+      bool operator == (const CurrentConditions & ccs) const;
+      bool operator != (const CurrentConditions & ccs) const;
       
     private:
       std::string  _station;

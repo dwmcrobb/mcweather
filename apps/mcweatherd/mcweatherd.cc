@@ -39,6 +39,7 @@
 //!  \brief NOT YET DOCUMENTED
 //---------------------------------------------------------------------------
 
+#include "DwmSysLogger.hh"
 #include "DwmMcweatherCurrentConditions.hh"
 #include "DwmMcweatherWeatherFetcher.hh"
 
@@ -65,6 +66,10 @@ int main(int argc, char *argv[])
 
   Mcweather::Config  config;
   if (config.Parse(configFile)) {
+    Dwm::SysLogger::Open("mcweatherd", LOG_PID|LOG_PERROR, config.SyslogFacility());
+    Dwm::SysLogger::MinimumPriority(config.SyslogLevel());
+    Dwm::SysLogger::ShowFileLocation(config.SyslogLocations());
+
     Mcweather::WeatherFetcher  fetcher(config);
     if (fetcher.Start()) {
       for (;;) {

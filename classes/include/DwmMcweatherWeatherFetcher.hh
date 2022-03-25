@@ -47,6 +47,7 @@
 #include <nlohmann/json.hpp>
 
 #include "DwmMcweatherConfig.hh"
+#include "DwmMcweatherCache.hh"
 #include "DwmMcweatherCurrentConditions.hh"
 
 
@@ -78,8 +79,10 @@ namespace Dwm {
       std::condition_variable  _runcv;
       std::thread              _thread;
       time_t                   _lastFetchedForecast;
+      Cache                    _cache;
       
-      bool GetForecasts(float latitude, float longitude);
+      bool GetForecasts();
+      bool GetHourlyForecasts();
       bool SaveForecast(const nlohmann::json & forecast) const;
       bool LoadSavedForecast(nlohmann::json & forecast) const;
       void Run();

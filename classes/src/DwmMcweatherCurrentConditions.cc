@@ -286,6 +286,24 @@ namespace Dwm {
       }
       return os;
     }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool CurrentCondition::operator == (const CurrentCondition & cc) const
+    {
+      return ((_value == cc._value)
+              && (_unitCode == cc._unitCode)
+              && (_qualityControl == cc._qualityControl));
+    }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool CurrentCondition::operator != (const CurrentCondition & cc) const
+    {
+      return (! (*this == cc));
+    }
     
     //------------------------------------------------------------------------
     //!  
@@ -296,7 +314,7 @@ namespace Dwm {
         
       bool  rc = false;
       std::ofstream  dbgos("/tmp/currentWeather.json");
-      dbgos << js << '\n';
+      dbgos << js.dump(3) << '\n';
       dbgos.close();
         
       _temperature = INT_MAX;
@@ -473,7 +491,30 @@ namespace Dwm {
       }
       return os;
     }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool CurrentConditions::operator == (const CurrentConditions & ccs) const
+    {
+      return ((_station               == ccs._station)
+              && (_temperature        == ccs._temperature)
+              && (_relativeHumidity   == ccs._relativeHumidity)
+              && (_barometricPressure == ccs._barometricPressure)
+              && (_dewpoint           == ccs._dewpoint)
+              && (_windSpeed          == ccs._windSpeed)
+              && (_windChill          == ccs._windChill)
+              && (_heatIndex          == ccs._heatIndex));
+    }
     
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool CurrentConditions::operator != (const CurrentConditions & ccs) const
+    {
+      return (! (*this == ccs));
+    }
+      
     
   }  // namespace Mceather
 

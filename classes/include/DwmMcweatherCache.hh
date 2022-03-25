@@ -42,34 +42,163 @@
 #ifndef _DWMMCWEATHERCACHE_HH_
 #define _DWMMCWEATHERCACHE_HH_
 
+#include <filesystem>
+#include <fstream>
+#include <map>
+#include <mutex>
+
+#include "DwmStreamIO.hh"
+#include "DwmSysLogger.hh"
+#include "DwmMcweatherCurrentConditions.hh"
+#include "DwmMcweatherPeriodForecasts.hh"
 #include "DwmMcweatherPointInfo.hh"
+#include "DwmMcweatherWeatherConfig.hh"
 
 namespace Dwm {
 
   namespace Mcweather {
 
     //------------------------------------------------------------------------
-    //!  
+    //!  This needs refactoring.  It's coupled too tightly to WeatherFetcher
+    //!  and Utils and does more than it should.
     //------------------------------------------------------------------------
     class Cache
     {
     public:
+      using ObservationStations =
+        std::vector<std::pair<std::string,std::string>>;
+      
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      static bool GetPointInfo(float latitude, float longitude,
-                               PointInfo & info);
+      Cache(const std::string & cacheDir, const WeatherConfig & config);
+      
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      bool GetPointInfo(PointInfo & info) const;
 
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      static bool
-      GetObservationStations(float latitude, float longitude,
-                             std::vector<std::pair<std::string,std::string>> & stations);
+      void SetPointInfo(const PointInfo & info);
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      time_t AgeOfPointInfo() const;
+      
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      bool
+      GetObservationStations(ObservationStations & stations) const;
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      void
+      SetObservationStations(const ObservationStations & stations);
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      time_t AgeOfObservationStations() const;
+      
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      bool GetCurrentConditions(std::map<std::string, CurrentConditions> & currentConditions) const;
+
+      bool SetConditions(const CurrentConditions & conditions);
+
+      bool GetPeriodForecasts(PeriodForecasts & forecasts) const;
+
+      bool SetPeriodForecasts(const PeriodForecasts & forecasts);
+      
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      std::string PointCacheDir() const;
 
     private:
-      static bool EnsureDirExists(const std::string & s);
-      static std::string CacheDir(float latitude, float longitude);
+      std::string                                      _cacheDir;
+      WeatherConfig                                    _config;
+      static std::mutex                                _pointInfoMtx;
+      PointInfo                                        _pointInfo;
+      static std::mutex                                _obsStationMtx;
+      std::vector<std::pair<std::string,std::string>>  _observationStations;
+      static std::mutex                                _currentCondMtx;
+      std::map<std::string, CurrentConditions>         _currentConditions;
+      static std::mutex                                _periodForecastsMtx;
+      PeriodForecasts                                  _periodForecasts;
+      
+      static bool EnsureDirExists(const std::filesystem::path & s);
+      static std::time_t LastWriteTime(const std::filesystem::path & fsPath);
+      static std::time_t AgeOfFile(const std::filesystem::path & fsPath);
+      bool SavePointInfo() const;
+      bool SaveObservationStations() const;
+      bool SaveCurrentConditions() const;
+      bool SavePeriodForecasts() const;
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      template <typename T>
+      bool SaveCacheFile(const T & t, std::mutex & mtx,
+                         const std::filesystem::path & p) const
+      {
+        namespace fs = std::filesystem;
+        
+        bool  rc = false;
+        if (EnsureDirExists(p.parent_path())) {
+          if ((fs::exists(p) && fs::is_regular_file(p))
+              || (! fs::exists(p))) {
+            std::ofstream  os(p.string());
+            if (os) {
+              std::lock_guard<std::mutex>  lock(mtx);
+              if (StreamIO::Write(os, t)) {
+                rc = true;
+              }
+              else {
+                Syslog(LOG_ERR, "Failed to write to '%s'", p.string().c_str());
+              }
+            }
+            else {
+              Syslog(LOG_ERR, "Failed to open '%s'", p.string().c_str());
+            }
+          }
+          else {
+            Syslog(LOG_ERR, "'%s' is not a regular file", p.string().c_str());
+          }
+        }
+        return rc;
+      }
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      template <typename T>
+      bool LoadCacheFile(T & t, std::mutex & mtx,
+                         const std::filesystem::path & p) const
+      {
+        namespace fs = std::filesystem;
+        bool  rc = false;
+        if (fs::exists(p) && fs::is_regular_file(p)) {
+          std::ifstream  is(p);
+          if (StreamIO::Read(is, t)) {
+            rc = true;
+          }
+          else {
+            Syslog(LOG_ERR, "Failed to read from '%s'", p.string().c_str());
+          }
+        }
+        else {
+          Syslog(LOG_WARNING, "Invalid cache file '%s'", p.string().c_str());
+        }
+        return rc;
+      }
+          
     };
 
   }  // namespace Mcweather
