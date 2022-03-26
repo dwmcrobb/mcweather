@@ -81,7 +81,7 @@ namespace Dwm {
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      void SetPointInfo(const PointInfo & info);
+      bool SetPointInfo(const PointInfo & info);
 
       //----------------------------------------------------------------------
       //!  
@@ -91,14 +91,12 @@ namespace Dwm {
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      bool
-      GetObservationStations(ObservationStations & stations) const;
+      bool GetObservationStations(ObservationStations & stations) const;
 
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      void
-      SetObservationStations(const ObservationStations & stations);
+      bool SetObservationStations(const ObservationStations & stations);
 
       //----------------------------------------------------------------------
       //!  
@@ -110,11 +108,36 @@ namespace Dwm {
       //----------------------------------------------------------------------
       bool GetCurrentConditions(std::map<std::string, CurrentConditions> & currentConditions) const;
 
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
       bool SetConditions(const CurrentConditions & conditions);
 
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      time_t AgeOfCurrentConditions() const;
+      
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
       bool GetPeriodForecasts(PeriodForecasts & forecasts) const;
 
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
       bool SetPeriodForecasts(const PeriodForecasts & forecasts);
+
+      //----------------------------------------------------------------------
+      //!  
+      //----------------------------------------------------------------------
+      time_t AgeOfPeriodForecasts() const;
+
+      bool GetHourlyForecasts(PeriodForecasts & forecasts) const;
+
+      bool SetHourlyForecasts(const PeriodForecasts & forecasts);
+
+      time_t AgeOfHourlyForecasts() const;
       
       //----------------------------------------------------------------------
       //!  
@@ -132,6 +155,8 @@ namespace Dwm {
       std::map<std::string, CurrentConditions>         _currentConditions;
       static std::mutex                                _periodForecastsMtx;
       PeriodForecasts                                  _periodForecasts;
+      static std::mutex                                _hourlyForecastsMtx;
+      PeriodForecasts                                  _hourlyForecasts;
       
       static bool EnsureDirExists(const std::filesystem::path & s);
       static std::time_t LastWriteTime(const std::filesystem::path & fsPath);
@@ -140,6 +165,7 @@ namespace Dwm {
       bool SaveObservationStations() const;
       bool SaveCurrentConditions() const;
       bool SavePeriodForecasts() const;
+      bool SaveHourlyForecasts() const;
 
       //----------------------------------------------------------------------
       //!  

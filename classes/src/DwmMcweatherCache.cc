@@ -70,6 +70,7 @@ namespace Dwm {
     mutex  Cache::_obsStationMtx;
     mutex  Cache::_currentCondMtx;
     mutex  Cache::_periodForecastsMtx;
+    mutex  Cache::_hourlyForecastsMtx;
     
     //------------------------------------------------------------------------
     //!  
@@ -90,6 +91,9 @@ namespace Dwm {
 
       fs::path  forecastsPath(pointCacheDir + "/periodForecasts");
       LoadCacheFile(_periodForecasts, _periodForecastsMtx, forecastsPath);
+
+      fs::path  hourlyPath(pointCacheDir + "/hourlyForecasts");
+      LoadCacheFile(_hourlyForecasts, _hourlyForecastsMtx, hourlyPath);
     }
 
     //------------------------------------------------------------------------
@@ -107,21 +111,37 @@ namespace Dwm {
     bool Cache::SetConditions(const CurrentConditions & conditions)
     {
       bool  rc = true;
-      lock_guard<mutex>  lock(_currentCondMtx);
-      auto  it = _currentConditions.find(conditions.Station());
-      if (it != _currentConditions.end()) {
-        if (it->second != conditions) {
-          it->second = conditions;
-          rc = SaveCurrentConditions();
+      bool  updated = false;
+      {
+        lock_guard<mutex>  lock(_currentCondMtx);
+        auto  it = _currentConditions.find(conditions.Station());
+        if (it != _currentConditions.end()) {
+          if (it->second != conditions) {
+            it->second = conditions;
+            updated = true;
+          }
+        }
+        else {
+          _currentConditions[conditions.Station()] = conditions;
+          updated = true;
         }
       }
-      else {
-        _currentConditions[conditions.Station()] = conditions;
+      
+      if (updated) {
         rc = SaveCurrentConditions();
       }
       return rc;
     }
 
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    time_t Cache::AgeOfCurrentConditions() const
+    {
+      fs::path  p(PointCacheDir() + "/currentConditions");
+      return AgeOfFile(p);
+    }
+    
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
@@ -157,7 +177,61 @@ namespace Dwm {
       fs::path  p(PointCacheDir() + "/periodForecasts");
       return SaveCacheFile(_periodForecasts, _periodForecastsMtx, p);
     }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    time_t Cache::AgeOfPeriodForecasts() const
+    {
+      fs::path  p(PointCacheDir() + "/periodForecasts");
+      return AgeOfFile(p);
+    }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool Cache::GetHourlyForecasts(PeriodForecasts & forecasts) const
+    {
+      bool      rc = false;
+      fs::path  p(PointCacheDir() + "/hourlyForecasts");
+      lock_guard<mutex>  lock(_hourlyForecastsMtx);
+      if (LastWriteTime(p) > 0) {
+        forecasts = _hourlyForecasts;
+        rc = true;
+      }
+      return rc;
+    }
     
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool Cache::SetHourlyForecasts(const PeriodForecasts & forecasts)
+    {
+      {
+        lock_guard<mutex>  lock(_hourlyForecastsMtx);
+        _hourlyForecasts = forecasts;
+      }
+      return SaveHourlyForecasts();
+    }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool Cache::SaveHourlyForecasts() const
+    {
+      fs::path  p(PointCacheDir() + "/hourlyForecasts");
+      return SaveCacheFile(_hourlyForecasts, _hourlyForecastsMtx, p);
+    }
+    
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    time_t Cache::AgeOfHourlyForecasts() const
+    {
+      fs::path  p(PointCacheDir() + "/hourlyForecasts");
+      return AgeOfFile(p);
+    }
+
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
@@ -256,14 +330,13 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    void Cache::SetPointInfo(const PointInfo & info)
+    bool Cache::SetPointInfo(const PointInfo & info)
     {
       {
         lock_guard<mutex>  lock(_pointInfoMtx);
         _pointInfo = info;
       }
-      SavePointInfo();
-      return;
+      return SavePointInfo();
     }
 
     //------------------------------------------------------------------------
@@ -278,15 +351,14 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    void
+    bool
     Cache::SetObservationStations(const vector<pair<string,string>> & stations)
     {
       {
         lock_guard<mutex>  lock(_obsStationMtx);
         _observationStations = stations;
       }
-      SaveObservationStations();
-      return;
+      return SaveObservationStations();
     }
 
     //------------------------------------------------------------------------
@@ -309,102 +381,6 @@ namespace Dwm {
         stations = _observationStations;
       }
       return true;
-#if 0
-      stations.clear();
-      bool  rc = false;
-      std::string  pointCacheDir = PointCacheDir();
-      if (EnsureDirExists(pointCacheDir)) {
-        fs::path  stationCache(pointCacheDir + "/observationStations");
-        if (fs::exists(stationCache) && fs::is_regular_file(stationCache)) {
-          time_t  lastModified = LastWriteTime(stationCache.string());
-          time_t  now = time((time_t *)0);
-          if ((lastModified + 604800) > now) {
-            //  cache is recent (1 week old or less).
-            ifstream  is(stationCache.string());
-            if (is) {
-              if (StreamIO::Read(is, stations)) {
-                rc = true;
-              }
-              else {
-                Syslog(LOG_ERR, "Failed to read observation station cache");
-              }
-              is.close();
-            }
-            else {
-              Syslog(LOG_ERR,
-                     "Failed to open observation station cache for "
-                     " reading: %m");
-            }
-          }
-          else {
-            //  cache is old.  Refresh it.
-            PointInfo  pointInfo;
-            if (GetPointInfo(pointInfo)) {
-              if (Utils::GetObservationStations(pointInfo, stations)) {
-                rc = true;
-                ofstream  os(stationCache.string());
-                if (os) {
-                  if (! StreamIO::Write(os, stations)) {
-                    Syslog(LOG_ERR,
-                           "Failed to save observation station cache");
-                  }
-                  os.close();
-                }
-                else {
-                  Syslog(LOG_ERR, "Failed to open '%s': %m",
-                         stationCache.string().c_str());
-                }
-              }
-              else {
-                Syslog(LOG_ERR, "Failed to fetch observation stations");
-              }
-            }
-            else {
-              Syslog(LOG_ERR, "Failed to get point info for %f,%f",
-                     _config.Latitude(), _config.Longitude());
-            }
-          }
-        }
-        else {
-          //  Observation station cache doesn't exist.
-          PointInfo  pointInfo;
-          if (GetPointInfo(pointInfo)) {
-            if (Utils::GetObservationStations(pointInfo, stations)) {
-              rc = true;
-              ofstream  os(stationCache.string());
-              if (os) {
-                if (! StreamIO::Write(os, stations)) {
-                  Syslog(LOG_ERR,
-                         "Failed to save observation station cache");
-                }
-                os.close();
-              }
-              else {
-                Syslog(LOG_ERR, "Failed to open '%s': %m",
-                       stationCache.string().c_str());
-              }
-            }
-            else {
-              Syslog(LOG_ERR, "Failed to fetch observation stations");
-            }
-          }
-          else {
-            Syslog(LOG_ERR, "Failed to get point info for %f,%f",
-                   _config.Latitude(), _config.Longitude());
-          }
-        }
-      }
-      else {
-        //  Error: cache dir doesn't exist and we couldn't create it.
-        Syslog(LOG_INFO, "'%s' doesn't exist and can't be created",
-               pointCacheDir.c_str());
-        PointInfo  pointInfo;
-        if (GetPointInfo(pointInfo)) {
-          rc = Utils::GetObservationStations(pointInfo, stations);
-        }
-      }
-      return rc;
-#endif
     }
 
     //------------------------------------------------------------------------
