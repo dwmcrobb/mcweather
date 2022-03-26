@@ -52,6 +52,15 @@ namespace Dwm {
     //------------------------------------------------------------------------
     PeriodForecasts::PeriodForecasts(nlohmann::json json)
     {
+      FromJson(json);
+    }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool PeriodForecasts::FromJson(nlohmann::json json)
+    {
+      _forecasts.clear();
       if (json.is_object()) {
         nlohmann::json::json_pointer  p("/properties/periods");
         try {
@@ -66,8 +75,9 @@ namespace Dwm {
           Syslog(LOG_ERR, "Failed to find properties/periods");
         }
       }
+      return (! _forecasts.empty());
     }
-
+    
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
