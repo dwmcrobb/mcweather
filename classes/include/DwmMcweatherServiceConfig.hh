@@ -40,6 +40,7 @@
 //---------------------------------------------------------------------------
 
 #include <set>
+#include <boost/asio.hpp>
 
 #include "DwmIpPrefix.hh"
 #include "DwmMcweatherTCPAddress.hh"
@@ -57,18 +58,18 @@ namespace Dwm {
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      const std::set<TCPAddress> & Addresses() const;
+      const std::set<boost::asio::ip::tcp::endpoint> & Addresses() const;
       
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      const std::set<TCPAddress> &
-      Addresses(const std::set<TCPAddress> & addrs);
+      const std::set<boost::asio::ip::tcp::endpoint> &
+      Addresses(const std::set<boost::asio::ip::tcp::endpoint> & addrs);
 
       //----------------------------------------------------------------------
       //!  
       //----------------------------------------------------------------------
-      void AddAddress(const TCPAddress & addr);
+      void AddAddress(const boost::asio::ip::tcp::endpoint & addr);
       
       //----------------------------------------------------------------------
       //!  
@@ -102,9 +103,9 @@ namespace Dwm {
       operator << (std::ostream & os, const ServiceConfig & cfg);
       
     private:
-      std::set<TCPAddress>  _serviceAddresses;
-      std::string           _keyDirectory;
-      std::set<IpPrefix>    _allowedClients;
+      std::set<boost::asio::ip::tcp::endpoint>  _serviceAddresses;
+      std::string                               _keyDirectory;
+      std::set<IpPrefix>                        _allowedClients;
     };
     
     

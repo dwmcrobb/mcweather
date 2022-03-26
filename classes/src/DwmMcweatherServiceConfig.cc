@@ -50,7 +50,8 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    const set<TCPAddress> & ServiceConfig::Addresses() const
+    const set<boost::asio::ip::tcp::endpoint> &
+    ServiceConfig::Addresses() const
     {
       return _serviceAddresses;
     }
@@ -58,8 +59,8 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    const set<TCPAddress> &
-    ServiceConfig::Addresses(const set<TCPAddress> & addrs)
+    const set<boost::asio::ip::tcp::endpoint> &
+    ServiceConfig::Addresses(const set<boost::asio::ip::tcp::endpoint> & addrs)
     {
       _serviceAddresses = addrs;
       return _serviceAddresses;
@@ -68,7 +69,7 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    void ServiceConfig::AddAddress(const TCPAddress & addr)
+    void ServiceConfig::AddAddress(const boost::asio::ip::tcp::endpoint & addr)
     {
       _serviceAddresses.insert(addr);
       return;
@@ -131,12 +132,12 @@ namespace Dwm {
         if (! cfg._serviceAddresses.empty()) {
           os << "    addresses = [\n";
           auto  iter = cfg._serviceAddresses.begin();
-          os << "        { address = \"" << iter->Addr()
-             << "\"; port = " << iter->Port() << "; }";
+          os << "        { address = \"" << iter->address()
+             << "\"; port = " << iter->port() << "; }";
           ++iter;
           for ( ; iter != cfg._serviceAddresses.end(); ++iter) {
-            os << ",\n        { address = \"" << iter->Addr()
-               << "\"; port = " << iter->Port() << "; }";
+            os << ",\n        { address = \"" << iter->address()
+               << "\"; port = " << iter->port() << "; }";
           }
           os << "\n    ];\n\n";
         }

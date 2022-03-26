@@ -2,6 +2,7 @@
 {
   #include <string>
   #include <vector>
+  #include <boost/asio.hpp>
 
   #include "DwmIpPrefix.hh"
 
@@ -54,8 +55,8 @@
   Dwm::Mcweather::WeatherConfig                 *weatherConfigVal;
   set<Dwm::IpPrefix>                            *ipPrefixSetVal;
   Dwm::Mcweather::ServiceConfig                 *serviceConfigVal;
-  Dwm::Mcweather::TCPAddress                    *serviceAddrVal;
-  std::set<Dwm::Mcweather::TCPAddress>          *serviceAddrSetVal;
+  boost::asio::ip::tcp::endpoint                *serviceAddrVal;
+  std::set<boost::asio::ip::tcp::endpoint>      *serviceAddrSetVal;
   pair<string,string>                           *stringStringPairVal;
   std::map<string,string>                       *stringStringMapVal;
 }
@@ -192,7 +193,7 @@ ServiceAddresses: ADDRESSES '=' '[' ServiceAddressSet ']' ';'
 
 ServiceAddressSet: ServiceAddress
 {
-  $$ = new std::set<Dwm::Mcweather::TCPAddress>();
+  $$ = new std::set<boost::asio::ip::tcp::endpoint>();
   $$->insert(*$1);
   delete $1;
 }
@@ -204,44 +205,82 @@ ServiceAddressSet: ServiceAddress
 
 ServiceAddress: '{' ADDRESS '=' STRING ';' '}'
 {
-  $$ = new Dwm::Mcweather::TCPAddress(*$4, 2123);
-  if (($$->Addr().Family() == AF_INET)
-      && ($$->Addr().Addr<Ipv4Address>()->Raw() == INADDR_NONE)) {
-    mcweathercfgerror("invalid IP address");
-    delete $4;
-    return 1;
+  using batcp = boost::asio::ip::tcp;
+    
+  if (*$4 == "in6addr_any") {
+      $$ = new batcp::endpoint(batcp::v6(), 2124);
+  }
+  else if (*$4 == "inaddr_any") {
+      $$ = new batcp::endpoint(batcp::v4(), 2124);
+  }
+  else {
+    boost::system::error_code  ec;
+    boost::asio::ip::address  addr =
+      boost::asio::ip::address::from_string(*$4, ec);
+    if (ec) {
+      mcweathercfgerror("invalid IP address");
+      delete $4;
+      return 1;
+    }
+    $$ = new boost::asio::ip::tcp::endpoint(addr, 2124);
   }
   delete $4;
 }
 | '{' ADDRESS '=' STRING ';' PORT '=' TCP4Port ';' '}'
 {
-  $$ = new Dwm::Mcweather::TCPAddress(*$4, $8);
-  if (($$->Addr().Family() == AF_INET)
-      && ($$->Addr().Addr<Ipv4Address>()->Raw() == INADDR_NONE)) {
-    mcweathercfgerror("invalid IP address");
-    delete $4;
-    return 1;
-  }
-  else if (($8 <= 0) || ($8 > 65535)) {
+  namespace baip = boost::asio::ip;
+  using batcp =	boost::asio::ip::tcp;
+  
+  if (($8 <= 0) || ($8 > 65535)) {
     mcweathercfgerror("invalid port");
     delete $4;
     return 1;
+  }
+
+  if (*$4 == "in6addr_any") {
+      $$ = new batcp::endpoint(batcp::v6(), $8);
+  }
+  else if (*$4 == "inaddr_any") {
+      $$ = new batcp::endpoint(batcp::v4(), $8);
+  }
+  else {
+    boost::system::error_code  ec;
+    baip::address  addr = baip::address::from_string(*$4, ec);
+    if (ec) {
+      mcweathercfgerror("invalid IP address");
+      delete $4;
+      return 1;
+    }
+    $$ = new batcp::endpoint(addr, $8);
   }
   delete $4;
 }
 | '{' PORT '=' TCP4Port ';' ADDRESS '=' STRING ';' '}'
 {
-  $$ = new Dwm::Mcweather::TCPAddress(*$8, $4);
-  if (($$->Addr().Family() == AF_INET)
-      && ($$->Addr().Addr<Ipv4Address>()->Raw() == INADDR_NONE)) {
-    mcweathercfgerror("invalid IP address");
-    delete $8;
-    return 1;
-  }
-  else if (($4 <= 0) || ($4 > 65535)) {
+  namespace baip = boost::asio::ip;
+  using batcp = boost::asio::ip::tcp;
+
+  if (($4 <= 0) || ($4 > 65535)) {
     mcweathercfgerror("invalid port");
     delete $8;
     return 1;
+  }
+  baip::address  addr;
+  if (*$8 == "in6addr_any") {
+    $$ = new batcp::endpoint(batcp::v6(), $4);
+  }
+  else if (*$8 == "inaddr_any") {
+    $$ = new batcp::endpoint(batcp::v4(), $4);
+  }
+  else {
+    boost::system::error_code  ec;
+    baip::address addr = baip::address::from_string(*$8, ec);
+    if (ec) {
+      mcweathercfgerror("invalid IP address");
+      delete $8;
+      return 1;
+    }
+    $$ = new batcp::endpoint(addr, $4);
   }
   delete $8;
 };
@@ -396,6 +435,8 @@ namespace Dwm {
     //------------------------------------------------------------------------
     bool Config::Parse(const string & path)
     {
+      using  batcp = boost::asio::ip::tcp;
+        
       bool  rc = false;
       Clear();
       
@@ -411,8 +452,8 @@ namespace Dwm {
       }
       if (rc) {
         if (_service.Addresses().empty()) {
-          _service.AddAddress(TCPAddress(Ipv6Address(in6addr_any), 2124));
-          _service.AddAddress(TCPAddress(Ipv4Address(INADDR_ANY), 2124));
+          _service.AddAddress(batcp::endpoint(batcp::v6(), 2124));
+          _service.AddAddress(batcp::endpoint(batcp::v4(), 2124));
         }
       }
       return rc;

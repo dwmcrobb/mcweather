@@ -62,14 +62,14 @@ int main(int argc, char *argv[])
     cfgFile = argv[1];
   }
 
-  using Dwm::Mcweather::TCPAddress;
+  using batcp = boost::asio::ip::tcp;
   
   Dwm::Mcweather::Config  config;
   if (UnitAssert(config.Parse(cfgFile))) {
     UnitAssert(config.Service().Addresses().size() == 2);
-    UnitAssert(config.Service().Addresses().find(TCPAddress("inaddr_any", 2124))
+    UnitAssert(config.Service().Addresses().find(batcp::endpoint(batcp::v4(), 2124))
                != config.Service().Addresses().end());
-    UnitAssert(config.Service().Addresses().find(TCPAddress("in6addr_any", 2124))
+    UnitAssert(config.Service().Addresses().find(batcp::endpoint(batcp::v6(), 2124))
                != config.Service().Addresses().end());
 
     ofstream  tmpofs("./tmp_config.cfg");
@@ -79,9 +79,9 @@ int main(int argc, char *argv[])
 
       if (UnitAssert(config.Parse("./tmp_config.cfg"))) {
         UnitAssert(config.Service().Addresses().size() == 2);
-        UnitAssert(config.Service().Addresses().find(TCPAddress("inaddr_any", 2124))
+        UnitAssert(config.Service().Addresses().find(batcp::endpoint(batcp::v4(), 2124))
                    != config.Service().Addresses().end());
-        UnitAssert(config.Service().Addresses().find(TCPAddress("in6addr_any", 2124))
+        UnitAssert(config.Service().Addresses().find(batcp::endpoint(batcp::v6(), 2124))
                    != config.Service().Addresses().end());
       }
       std::remove("./tmp_config.cfg");

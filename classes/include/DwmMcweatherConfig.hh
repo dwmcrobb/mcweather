@@ -46,7 +46,6 @@
 #include <string>
 
 #include "DwmMcweatherServiceConfig.hh"
-#include "DwmMcweatherTCPAddress.hh"
 #include "DwmMcweatherWeatherConfig.hh"
 
 namespace Dwm {

@@ -60,7 +60,7 @@ namespace Dwm {
     //------------------------------------------------------------------------
     WeatherFetcher::WeatherFetcher(const Config & config)
         : _config(config), _run(false), _runmtx(),
-          _runcv(), _thread(), _lastFetchedForecast(0),
+          _runcv(), _thread(),
           _cache(_config.CacheDirectory(), _config.Weather())
     {
     }
@@ -108,6 +108,175 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
+    bool WeatherFetcher::UpdatePointInfo()
+    {
+      bool  rc = false;
+      if (_cache.AgeOfPointInfo() > (7 * 24 * 60 * 60)) {
+        //  cache is old.
+        PointInfo  pointInfo;
+        if (Utils::GetPointInfo(_config.Weather().Latitude(),
+                                _config.Weather().Longitude(),
+                                pointInfo)) {
+          rc = _cache.SetPointInfo(pointInfo);
+        }
+        else {
+          Syslog(LOG_ERR, "Failed to get point info");
+        }
+      }
+      else {
+        //  cache is current.
+        rc = true;
+      }
+      return rc;
+    }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool WeatherFetcher::UpdatePeriodForecasts()
+    {
+      bool  rc = false;
+      if (_cache.AgeOfPeriodForecasts() > (15 * 60)) {
+        //  cache is old.
+        PointInfo  pointInfo;
+        if (_cache.GetPointInfo(pointInfo)) {
+          nlohmann::json  json;
+          if (WebUtils::GetJson(pointInfo.ForecastURI(), json)) {
+            if (json.is_object()) {
+              auto  props = json.find("properties");
+              if ((props != json.end()) && props->is_object()) {
+                auto  periods = props->find("periods");
+                if ((periods != props->end()) && periods->is_array()) {
+                  PeriodForecasts  forecasts;
+                  if (forecasts.FromJson(json)) {
+                    rc = _cache.SetPeriodForecasts(forecasts);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      else {
+        //  cache is current.
+        rc = true;
+      }
+      return rc;
+    }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool WeatherFetcher::UpdateHourlyForecasts()
+    {
+      bool  rc = false;
+      if (_cache.AgeOfHourlyForecasts() > (15 * 60)) {
+        //  cache is old.
+        PointInfo  pointInfo;
+        if (_cache.GetPointInfo(pointInfo)) {
+          nlohmann::json  json;
+          if (WebUtils::GetJson(pointInfo.HourlyForecastURI(), json)) {
+            if (json.is_object()) {
+              auto  props = json.find("properties");
+              if ((props != json.end()) && props->is_object()) {
+                auto  periods = props->find("periods");
+                if ((periods != props->end()) && periods->is_array()) {
+                  PeriodForecasts  forecasts;
+                  if (forecasts.FromJson(json)) {
+                    rc = _cache.SetHourlyForecasts(forecasts);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      else {
+        //  cache is current.
+        rc = true;
+      }
+      return rc;
+    }
+    
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool WeatherFetcher::UpdateObservationStations()
+    {
+      bool  rc = false;
+      if (_cache.AgeOfObservationStations() >  (7 * 24 * 60 * 60)) {
+        //  cache is old.
+        PointInfo  pointInfo;
+        if (_cache.GetPointInfo(pointInfo)) {
+          vector<pair<string,string>>  stations;
+          if (Utils::GetObservationStations(pointInfo, stations)) {
+            rc = _cache.SetObservationStations(stations);
+          }
+          else {
+            Syslog(LOG_ERR, "Failed to get observation stations");
+          }
+        }
+        else {
+          Syslog(LOG_ERR, "Failed to get point information");
+        }
+      }
+      else {
+        //  cache is current.
+        rc = true;
+      }
+      return rc;
+    }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool WeatherFetcher::UpdateCurrentConditions()
+    {
+      bool  rc = false;
+      vector<pair<string,string>>  obsStations;
+      if (_cache.GetObservationStations(obsStations)) {
+        vector<string>  stationNames;
+        for (const auto & cfgstation : _config.Weather().Stations()) {
+          stationNames.push_back(cfgstation);
+        }
+        for (const auto & obsStation : obsStations) {
+          if (find(stationNames.begin(), stationNames.end(), obsStation.first)
+              == stationNames.end()) {
+              stationNames.push_back(obsStation.first);
+          }
+        }
+        if (! stationNames.empty()) {
+          CurrentConditions  wcc;
+          auto  stit = stationNames.begin();
+          while (stit != stationNames.end()) {
+            if (Utils::GetCurrentConditions(*stit, wcc)) {
+              rc = _cache.SetConditions(wcc);
+              Syslog(LOG_INFO, "Got current conditions for %s",
+                     wcc.Station().c_str());
+              break;
+            }
+            ++stit;
+          }
+          if (stit != stationNames.end()) {
+            ++stit;
+            while (stit != stationNames.end()) {
+              if (Utils::GetCurrentConditions(*stit, wcc)) {
+                rc = _cache.SetConditions(wcc);
+                Syslog(LOG_INFO, "Got current conditions for %s",
+                       wcc.Station().c_str());
+                break;
+              }
+              ++stit;
+            }
+          }
+        }
+      }
+      return rc;
+    }
+    
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
     bool WeatherFetcher::GetHourlyForecasts()
     {
       bool  rc = false;
@@ -124,111 +293,7 @@ namespace Dwm {
       }
       return rc;
     }
-    
-    //------------------------------------------------------------------------
-    //!  
-    //------------------------------------------------------------------------
-    bool WeatherFetcher::GetForecasts()
-    {
-      bool  rc = false;
-      PointInfo  pointInfo;
-      if (_cache.GetPointInfo(pointInfo)) {
-        nlohmann::json  json;
-        if (WebUtils::GetJson(pointInfo.ForecastURI(), json)) {
-          if (json.is_object()) {
-            auto  props = json.find("properties");
-            if ((props != json.end()) && props->is_object()) {
-              auto  periods = props->find("periods");
-              if ((periods != props->end()) && periods->is_array()) {
-                PeriodForecasts  periodForecasts(json);
-                _cache.SavePeriodForecasts(periodForecasts);
-                SaveForecast(json);
-                rc = true;
-              }
-              else {
-                Syslog(LOG_ERR, "Failed to find periods in forecast");
-              }
-            }
-            else {
-              Syslog(LOG_ERR, "Failed to find properties in forecast");
-            }
-          }
-          else {
-            Syslog(LOG_ERR, "forecast not a JSON object");
-          }
-        }
-      }
-      if (! rc) {
-        Syslog(LOG_WARNING, "Unable to fetch forecast");
-        nlohmann::json  json;
-        if (LoadSavedForecast(json)) {
-          Syslog(LOG_INFO, "Using cached forecast");
-          auto  props = json.find("properties");
-          if ((props != json.end()) && props->is_object()) {
-            auto  periods = props->find("periods");
-            if ((periods != props->end()) && periods->is_array()) {
-#if 0
-              emit newForecasts(*periods);
-              Syslog(LOG_DEBUG, "Emitted period forecasts from cache");
-#endif
-            }
-          }
-        }
-      }
-      
-      return rc;
-    }
 
-    //------------------------------------------------------------------------
-    //!  
-    //------------------------------------------------------------------------
-    bool WeatherFetcher::SaveForecast(const nlohmann::json & forecast) const
-    {
-      bool  rc = false;
-      std::string  forecastPath(_config.CacheDirectory());
-      if (! forecastPath.empty()) {
-        forecastPath += "/forecast.json";
-        ofstream  os(forecastPath);
-        if (os) {
-          os << forecast.dump(3) << '\n';
-          os.close();
-          rc = true;
-        }
-        else {
-          Syslog(LOG_ERR, "Failed to open '%s': %m", forecastPath.c_str());
-        }
-      }
-      else {
-        Syslog(LOG_ERR, "No weather cache store configured");
-      }
-      return rc;
-    }
-
-    //------------------------------------------------------------------------
-    //!  
-    //------------------------------------------------------------------------
-    bool WeatherFetcher::LoadSavedForecast(nlohmann::json & forecast) const
-    {
-      bool  rc = false;
-      std::string  forecastPath(getenv("HOME"));
-      if (! forecastPath.empty()) {
-        forecastPath += "/.forecast.json";
-        ifstream  is(forecastPath.c_str());
-        if (is) {
-          is >> forecast;
-          rc = forecast.is_object();
-          is.close();
-        }
-        else {
-          Syslog(LOG_ERR, "Failed to open '%s': %m", forecastPath.c_str());
-        }
-      }
-      else {
-        Syslog(LOG_ERR, "HOME environment variable not set");
-      }
-      return rc;
-    }
-    
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
@@ -236,71 +301,32 @@ namespace Dwm {
     {
       bool    keepRunning = true;
       string  curHost;
-      uint32_t  cycles = 0;
       
       Syslog(LOG_INFO, "WeatherFetcher thread started");
       while (keepRunning) {
-        if (cycles % 4 == 0) {
-          if (GetForecasts()) {
-            _lastFetchedForecast = time((time_t *)0);
-            GetHourlyForecasts();
+        if (UpdatePointInfo()) {
+          if (! UpdatePeriodForecasts()) {
+            Syslog(LOG_ERR, "Failed to get period forecasts");
+          }
+          if (! UpdateHourlyForecasts()) {
+            Syslog(LOG_ERR, "Failed to get hourly forecasts");
+          }
+          if (UpdateObservationStations()) {
+            if (! UpdateCurrentConditions()) {
+              Syslog(LOG_ERR, "Failed to get current conditions");
+            }
+          }
+          else {
+            Syslog(LOG_ERR, "Failed to get observation stations");
           }
         }
-        vector<pair<string,string>>  obsStations;
-        if (_cache.GetObservationStations(obsStations)) {
-          int  station = 0;
-          // set<string>  stations;
-          vector<string>  stations;
-          for (const auto & cfgstation : _config.Weather().Stations()) {
-            stations.push_back(cfgstation);
-          }
-          for (const auto & obsStation : obsStations) {
-            if (find(stations.begin(), stations.end(), obsStation.first)
-                == stations.end()) {
-              stations.push_back(obsStation.first);
-            }
-          }
-          if (! stations.empty()) {
-            bool  cacheUpdated = false;
-            CurrentConditions  wcc;
-            auto  stit = stations.begin();
-            while (stit != stations.end()) {
-              if (Utils::GetCurrentConditions(*stit, wcc)) {
-                cacheUpdated |= _cache.SetConditions(wcc);
-                Syslog(LOG_INFO, "Got current conditions for %s",
-                       wcc.Station().c_str());
-                break;
-              }
-              ++stit;
-            }
-            if (stit != stations.end()) {
-              ++stit;
-              while (stit != stations.end()) {
-                if (Utils::GetCurrentConditions(*stit, wcc)) {
-                  cacheUpdated |= _cache.SetConditions(wcc);
-                  Syslog(LOG_INFO, "Got current conditions for %s",
-                         wcc.Station().c_str());
-                  break;
-                }
-                ++stit;
-              }
-            }
-            if (cacheUpdated) {
-              _cache.SaveCurrentConditions();
-            }
-          }
-        }
-        else {
-          Syslog(LOG_ERR, "Failed to get observation stations");
-        }
-
+        
         {  //  scoped locking
           unique_lock<mutex>  lk(_runmtx);
           if (_runcv.wait_for(lk, 900s) != std::cv_status::timeout) {
             keepRunning = _run;
           }
         }
-        ++cycles;
       }
       Syslog(LOG_INFO, "WeatherFetcher thread done");
       

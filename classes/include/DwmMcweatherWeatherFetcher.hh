@@ -39,7 +39,6 @@
 //!  \brief NOT YET DOCUMENTED
 //---------------------------------------------------------------------------
 
-#include <ctime>
 #include <mutex>
 #include <condition_variable>
 #include <thread>
@@ -66,25 +65,20 @@ namespace Dwm {
       bool Start();
       bool Stop();
 
-#if 0
-    signals:
-      void newForecasts(nlohmann::json forecasts);
-      void currentConditions(int sn, Weather::CurrentConditions cc);
-#endif
-      
     private:
       Config                   _config;
       bool                     _run;
       std::mutex               _runmtx;
       std::condition_variable  _runcv;
       std::thread              _thread;
-      time_t                   _lastFetchedForecast;
       Cache                    _cache;
-      
-      bool GetForecasts();
+
+      bool UpdatePointInfo();
+      bool UpdateObservationStations();
+      bool UpdatePeriodForecasts();
+      bool UpdateHourlyForecasts();
+      bool UpdateCurrentConditions();
       bool GetHourlyForecasts();
-      bool SaveForecast(const nlohmann::json & forecast) const;
-      bool LoadSavedForecast(nlohmann::json & forecast) const;
       void Run();
     };
     
