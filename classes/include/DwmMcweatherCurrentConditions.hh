@@ -43,7 +43,6 @@
 #ifndef _DWMMCWEATHERCURRENTCONDITIONS_HH_
 #define _DWMMCWEATHERCURRENTCONDITIONS_HH_
 
-#include <ctime>
 #include <string>
 #include <nlohmann/json.hpp>
 
@@ -91,8 +90,8 @@ namespace Dwm {
       bool FromJson(const nlohmann::json & json);
       
       const std::string & Station() const;
-      std::time_t Timestamp() const;
-      std::time_t Timestamp(std::time_t ts);
+      int64_t Timestamp() const;
+      int64_t Timestamp(int64_t ts);
       int Temperature() const;
       int RelativeHumidity() const;
       int BarometricPressure() const;
@@ -109,7 +108,7 @@ namespace Dwm {
       
     private:
       std::string  _station;
-      std::time_t  _timestamp;
+      int64_t      _timestamp;
       int          _temperature;         // degrees F
       int          _relativeHumidity;    // percent
       int          _barometricPressure;  // in Pa

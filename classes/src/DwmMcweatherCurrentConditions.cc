@@ -168,6 +168,10 @@ namespace Dwm {
     static bool MetersPerSecondToMph(CurrentCondition & cond)
     {
       bool  rc = false;
+      if (cond.Value() == INT_MAX) {
+        Syslog(LOG_ERR, "Bad value %d", cond.Value());
+        return false;
+      }
       if ("unit:m_s-1" == cond.UnitCode()) {
         cond.Value((cond.Value() * 2.23694) + 0.5);
         cond.UnitCode("unit:mph");
@@ -390,7 +394,7 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    std::time_t CurrentConditions::Timestamp() const
+    int64_t CurrentConditions::Timestamp() const
     {
       return _timestamp;
     }
@@ -398,7 +402,7 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    std::time_t CurrentConditions::Timestamp(std::time_t ts)
+    int64_t CurrentConditions::Timestamp(int64_t ts)
     {
       _timestamp = ts;
       return _timestamp;
@@ -467,13 +471,15 @@ namespace Dwm {
     {
       if (is) {
         if (StreamIO::Read(is, _station)) {
-          if (StreamIO::Read(is, _temperature)) {
-            if (StreamIO::Read(is, _relativeHumidity)) {
-              if (StreamIO::Read(is, _barometricPressure)) {
-                if (StreamIO::Read(is, _dewpoint)) {
-                  if (StreamIO::Read(is, _windSpeed)) {
-                    if (StreamIO::Read(is, _windChill)) {
-                      StreamIO::Read(is, _heatIndex);
+          if (StreamIO::Read(is, _timestamp)) {
+            if (StreamIO::Read(is, _temperature)) {
+              if (StreamIO::Read(is, _relativeHumidity)) {
+                if (StreamIO::Read(is, _barometricPressure)) {
+                  if (StreamIO::Read(is, _dewpoint)) {
+                    if (StreamIO::Read(is, _windSpeed)) {
+                      if (StreamIO::Read(is, _windChill)) {
+                        StreamIO::Read(is, _heatIndex);
+                      }
                     }
                   }
                 }
@@ -492,13 +498,15 @@ namespace Dwm {
     {
       if (os) {
         if (StreamIO::Write(os, _station)) {
-          if (StreamIO::Write(os, _temperature)) {
-            if (StreamIO::Write(os, _relativeHumidity)) {
-              if (StreamIO::Write(os, _barometricPressure)) {
-                if (StreamIO::Write(os, _dewpoint)) {
-                  if (StreamIO::Write(os, _windSpeed)) {
-                    if (StreamIO::Write(os, _windChill)) {
-                      StreamIO::Write(os, _heatIndex);
+          if (StreamIO::Write(os, _timestamp)) {
+            if (StreamIO::Write(os, _temperature)) {
+              if (StreamIO::Write(os, _relativeHumidity)) {
+                if (StreamIO::Write(os, _barometricPressure)) {
+                  if (StreamIO::Write(os, _dewpoint)) {
+                    if (StreamIO::Write(os, _windSpeed)) {
+                      if (StreamIO::Write(os, _windChill)) {
+                        StreamIO::Write(os, _heatIndex);
+                      }
                     }
                   }
                 }
@@ -516,6 +524,7 @@ namespace Dwm {
     bool CurrentConditions::operator == (const CurrentConditions & ccs) const
     {
       return ((_station               == ccs._station)
+              && (_timestamp          == ccs._timestamp)
               && (_temperature        == ccs._temperature)
               && (_relativeHumidity   == ccs._relativeHumidity)
               && (_barometricPressure == ccs._barometricPressure)
