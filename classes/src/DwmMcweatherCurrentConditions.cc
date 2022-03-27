@@ -313,10 +313,7 @@ namespace Dwm {
       using nlohmann::json;
         
       bool  rc = false;
-      std::ofstream  dbgos("/tmp/currentWeather.json");
-      dbgos << js.dump(3) << '\n';
-      dbgos.close();
-        
+
       _temperature = INT_MAX;
       _windSpeed = INT_MAX;
       _windChill = INT_MAX;
@@ -324,6 +321,10 @@ namespace Dwm {
       auto  props = js.find("properties");
       if ((props != js.end()) && props->is_object()) {
         if (AssignFromJson(*props, "station", _station, false)) {
+          std::ofstream  dbgos("/tmp/currentWeather_" + _station + ".json");
+          dbgos << js.dump(3) << '\n';
+          dbgos.close();
+        
           size_t  idx = _station.find_last_of('/');
           if (idx < (_station.size() - 1)) {
             _station = _station.substr(idx + 1);
@@ -385,7 +386,24 @@ namespace Dwm {
     {
       return _station;
     }
-        
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    std::time_t CurrentConditions::Timestamp() const
+    {
+      return _timestamp;
+    }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    std::time_t CurrentConditions::Timestamp(std::time_t ts)
+    {
+      _timestamp = ts;
+      return _timestamp;
+    }
+    
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
