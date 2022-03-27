@@ -99,6 +99,21 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
+    bool Cache::GetCurrentConditions(std::map<std::string, CurrentConditions> & currentConditions) const
+    {
+      bool      rc = false;
+      fs::path  p(PointCacheDir() + "/currentConditions");
+      lock_guard<mutex>  lock(_currentCondMtx);
+      if (LastWriteTime(p) > 0) {
+        currentConditions = _currentConditions;
+        rc = true;
+      }
+      return rc;
+    }
+    
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
     bool Cache::SaveCurrentConditions() const
     {
       fs::path  p(PointCacheDir() + "/currentConditions");

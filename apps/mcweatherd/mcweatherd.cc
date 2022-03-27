@@ -41,6 +41,7 @@
 
 #include "DwmSysLogger.hh"
 #include "DwmMcweatherCurrentConditions.hh"
+#include "DwmMcweatherServer.hh"
 #include "DwmMcweatherWeatherFetcher.hh"
 
 using namespace std;
@@ -72,6 +73,9 @@ int main(int argc, char *argv[])
 
     Mcweather::WeatherFetcher  fetcher(config);
     if (fetcher.Start()) {
+      boost::asio::io_context context;
+      Mcweather::Server  server(context.get_executor(), config);
+      context.run();
       for (;;) {
         sleep(1);
       }
