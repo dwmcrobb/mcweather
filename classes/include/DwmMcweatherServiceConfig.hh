@@ -36,68 +36,75 @@
 //---------------------------------------------------------------------------
 //!  \file DwmMcweatherServiceConfig.hh
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief Dwm::Mcweather::ServiceConfig classs declaration
 //---------------------------------------------------------------------------
 
 #include <set>
 #include <boost/asio.hpp>
 
 #include "DwmIpPrefix.hh"
-#include "DwmMcweatherTCPAddress.hh"
 
 namespace Dwm {
 
   namespace Mcweather {
 
     //------------------------------------------------------------------------
-    //!  
+    //!  Encapsulates the mcweather network service configuration.
     //------------------------------------------------------------------------
     class ServiceConfig
     {
     public:
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns a reference to the endpoints on which we'll listen for
+      //!  client connections.
       //----------------------------------------------------------------------
       const std::set<boost::asio::ip::tcp::endpoint> & Addresses() const;
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the endpoints on which we'll listen for client
+      //!  connections.
       //----------------------------------------------------------------------
       const std::set<boost::asio::ip::tcp::endpoint> &
       Addresses(const std::set<boost::asio::ip::tcp::endpoint> & addrs);
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Adds an endpoint to the set of endpoints on which we'll listen
+      //!  for client connections.
       //----------------------------------------------------------------------
       void AddAddress(const boost::asio::ip::tcp::endpoint & addr);
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns the directory where our private key, public key and known
+      //!  client keys are stored.
       //----------------------------------------------------------------------
       const std::string & KeyDirectory() const;
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Sets and returns the directory where our private key, public key
+      //!  and known client keys are stored.
       //----------------------------------------------------------------------
       const std::string & KeyDirectory(const std::string & keyDir);
       
       //----------------------------------------------------------------------
-      //!
+      //!  Returns a reference to const of the set of prefixes from which
+      //!  we'll allow clients to connect.
       //----------------------------------------------------------------------
       const std::set<IpPrefix> & AllowedClients() const;
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Returns a reference to the set of prefixes from which we'll allow
+      //!  clients to connect.
       //----------------------------------------------------------------------
       std::set<IpPrefix> & AllowedClients();
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Clears the service configuration.
       //----------------------------------------------------------------------
       void Clear();
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Prints the given service configuration @c cfg to the given
+      //!  ostream @c os.
       //----------------------------------------------------------------------
       friend std::ostream &
       operator << (std::ostream & os, const ServiceConfig & cfg);
