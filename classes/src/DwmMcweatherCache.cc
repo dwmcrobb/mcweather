@@ -143,11 +143,30 @@ namespace Dwm {
       }
       
       if (updated) {
+        ClearOldConditions();
         rc = SaveCurrentConditions();
       }
       return rc;
     }
 
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    void Cache::ClearOldConditions()
+    {
+      std::time_t  now = time((time_t *)0);
+      for (auto it = _currentConditions.begin();
+           it != _currentConditions.end(); ) {
+        if (now > (it->second.Timestamp() + 3600)) {
+          it = _currentConditions.erase(it);
+        }
+        else {
+          ++it;
+        }
+      }
+      return;
+    }
+            
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------

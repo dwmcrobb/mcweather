@@ -163,6 +163,7 @@ namespace Dwm {
       static std::time_t AgeOfFile(const std::filesystem::path & fsPath);
       bool SavePointInfo() const;
       bool SaveObservationStations() const;
+      void ClearOldConditions();
       bool SaveCurrentConditions() const;
       bool SavePeriodForecasts() const;
       bool SaveHourlyForecasts() const;
