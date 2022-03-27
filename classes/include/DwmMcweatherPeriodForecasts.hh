@@ -36,7 +36,7 @@
 //---------------------------------------------------------------------------
 //!  \file DwmMcweatherPeriodForecasts.hh
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief Dwm::Mcweather::PeriodForecasts class declaration
 //---------------------------------------------------------------------------
 
 #ifndef _DWMMCWEATHERPERIODFORECASTS_HH_
@@ -53,41 +53,56 @@ namespace Dwm {
   namespace Mcweather {
 
     //------------------------------------------------------------------------
-    //!  
+    //!  Encapsulates a vector of PeriodForecast objects.
     //------------------------------------------------------------------------
     class PeriodForecasts
       : public StreamIOCapable
     {
     public:
       //----------------------------------------------------------------------
-      //!  
+      //!  Default constructor
       //----------------------------------------------------------------------
       PeriodForecasts() = default;
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Copy constructor
       //----------------------------------------------------------------------
       PeriodForecasts(const PeriodForecasts &) = default;
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Construct from the given JSON @c forecasts.  The JSON must be in
+      //!  the form used by api.weather.gov
       //----------------------------------------------------------------------
       PeriodForecasts(nlohmann::json forecasts);
 
       //----------------------------------------------------------------------
-      //!  
+      //!  Populate from the given JSON @c forecasts.  The JSON must be in
+      //!  the form used by api.weather.gov
       //----------------------------------------------------------------------
       bool FromJson(nlohmann::json forecasts);
       
       //----------------------------------------------------------------------
-      //!  
+      //!  Assignment operator
       //----------------------------------------------------------------------
       PeriodForecasts & operator = (const PeriodForecasts &) = default;
       
+      //----------------------------------------------------------------------
+      //!  Returns a reference to the encapsulated vector of PeriodForecast
+      //!  objects.
+      //----------------------------------------------------------------------
       const std::vector<PeriodForecast> & Forecasts() const
       { return _forecasts; }
       
+      //----------------------------------------------------------------------
+      //!  Reads the PeriodForecasts from the given istream @c is.  Returns
+      //!  @c is.
+      //----------------------------------------------------------------------
       std::istream & Read(std::istream & is) override;
+
+      //----------------------------------------------------------------------
+      //!  Writes the PeriodForecasts to the given ostream @c os.  Returns
+      //!  @c os.
+      //----------------------------------------------------------------------
       std::ostream & Write(std::ostream & os) const override;
 
     private:
