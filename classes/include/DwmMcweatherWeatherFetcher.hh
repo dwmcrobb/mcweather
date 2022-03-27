@@ -36,7 +36,7 @@
 //---------------------------------------------------------------------------
 //!  \file DwmMcweatherWeatherFetcher.hh
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief Dwm::Mcweather::WeatherFetcher class declaration
 //---------------------------------------------------------------------------
 
 #include <mutex>
@@ -55,14 +55,30 @@ namespace Dwm {
   namespace Mcweather {
 
     //------------------------------------------------------------------------
-    //!  
+    //!  Encapsulates a thread that periodically fetches and caches weather
+    //!  data according to a given configuration.
     //------------------------------------------------------------------------
     class WeatherFetcher
     {
     public:
+      //----------------------------------------------------------------------
+      //!  Construct from the given configuration @c config.
+      //----------------------------------------------------------------------
       WeatherFetcher(const Config & config);
+      
+      //----------------------------------------------------------------------
+      //!  Destructor
+      //----------------------------------------------------------------------
       ~WeatherFetcher();
+      
+      //----------------------------------------------------------------------
+      //!  Start the fetcher.  Returns true on success, false on failure.
+      //----------------------------------------------------------------------
       bool Start();
+      
+      //----------------------------------------------------------------------
+      //!  Stop the fetcher.  Returns true on success, false on failure.
+      //----------------------------------------------------------------------
       bool Stop();
 
     private:
