@@ -36,9 +36,10 @@
 //---------------------------------------------------------------------------
 //!  \file mcweather.cc
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief weather cache server daemon
 //---------------------------------------------------------------------------
 
+#include "DwmDaemonUtils.hh"
 #include "DwmSysLogger.hh"
 #include "DwmMcweatherCurrentConditions.hh"
 #include "DwmMcweatherServer.hh"
@@ -67,7 +68,8 @@ int main(int argc, char *argv[])
 
   Mcweather::Config  config;
   if (config.Parse(configFile)) {
-    Dwm::SysLogger::Open("mcweatherd", LOG_PID|LOG_PERROR, config.SyslogFacility());
+    DaemonUtils::Daemonize();
+    Dwm::SysLogger::Open("mcweatherd", LOG_PID, config.SyslogFacility());
     Dwm::SysLogger::MinimumPriority(config.SyslogLevel());
     Dwm::SysLogger::ShowFileLocation(config.SyslogLocations());
 
