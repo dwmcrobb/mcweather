@@ -55,8 +55,70 @@ using namespace Dwm;
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
-string FormattedPeriodForecast(const Mcweather::PeriodForecast & forecast,
-                               TerminalTricks & termTricks)
+static void
+PrintCurrentConditions(ostream & os, const Mcweather::CurrentConditions & cc)
+{
+  os << std::left << setw(7) << cc.Station() << "  "
+     << std::right << setw(3) << cc.Temperature() << "F  "
+     << std::right << setw(4) << cc.RelativeHumidity() << "%  "
+     << std::right << setw(4) << cc.Dewpoint() << "F  "
+     << std::right << std::setprecision(2) << std::fixed << std::setw(5)
+     << cc.BarometricPressure() * 0.0002952998751 << " in. Hg  "
+     << std::right << setw(5) << cc.WindSpeed() << " mph  ";
+  if (cc.WindChill() != INT_MAX) {
+    os << std::right << setw(8) << cc.WindChill() << "F  ";
+  }
+  else {
+    os << std::right << setw(9) << "   ---   " << "  ";
+  }
+  if (cc.HeatIndex() != INT_MAX) {
+    os << std::right << setw(8) << cc.HeatIndex() << "F";
+  }
+  else {
+    os << std::right << setw(9) << "   ---   ";
+  }
+  os << '\n';
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static void
+PrintCurrentConditions(ostream & os, TerminalTricks & termTricks,
+                       const map<string,Mcweather::CurrentConditions> & cc)
+{
+  string  secTitle("Current Conditions");
+  int  leadingCols = (termTricks.Columns() - secTitle.size()) / 2;
+  
+  os << setw(leadingCols) << ' '
+     << termTricks.Underscore(termTricks.Bold("Current Conditions"))
+     << "\n\n";
+  
+  os << std::left << setw(7) << termTricks.Underscore("Station") << "  "
+     << std::right << setw(4) << termTricks.Underscore("Temp") << "  "
+     << std::right << setw(5) << termTricks.Underscore("Humid") << "  "
+     << std::right << setw(5) << termTricks.Underscore("DewPt") << "  "
+     << std::right << setw(12) << termTricks.Underscore("Bar Pressure") << "  "
+     << std::right << setw(9) << termTricks.Underscore("WindSpeed") << "  "
+     << std::right << setw(9) << termTricks.Underscore("WindChill") << "  "
+     << std::right << setw(9) << termTricks.Underscore("HeatIndex") << "  "
+     << '\n';
+  
+  for (auto & c : cc) {
+    PrintCurrentConditions(os, c.second);
+  }
+  os << '\n';
+  
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static string
+FormattedPeriodForecast(const Mcweather::PeriodForecast & forecast,
+                        TerminalTricks & termTricks)
 {
   string         rc;
   istringstream  is(forecast.DetailedForecast());
@@ -82,6 +144,31 @@ string FormattedPeriodForecast(const Mcweather::PeriodForecast & forecast,
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
+static void PrintDailyForecasts(ostream & os, TerminalTricks & termTricks,
+                                const Mcweather::PeriodForecasts & forecasts)
+{
+  string  secTitle("Daily Forecasts");
+  int  leadingCols = (termTricks.Columns() - secTitle.size()) / 2;
+  os << setw(leadingCols) << ' '
+     << termTricks.Underscore(termTricks.Bold(secTitle)) << "\n\n";
+
+  for (const auto & f : forecasts.Forecasts()) {
+    termTricks.Bold(os, true);
+    termTricks.Underscore(os, true);
+    os << std::left << setw(15) << f.Name() << ' '
+       << std::right << setw(3) << f.Temperature()
+       << f.TemperatureUnit()
+       << ' ' << f.ShortForecast() << '\n';
+    termTricks.Bold(os, false);
+    termTricks.Underscore(os, false);
+    os << FormattedPeriodForecast(f, termTricks) << "\n\n";
+  }
+  return;
+}
+                                
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
   //  Dwm::SysLogger::Open("mcweather", LOG_PID|LOG_PERROR, LOG_USER);
@@ -96,26 +183,12 @@ int main(int argc, char *argv[])
       uint8_t  cmd = 1;
       if (peer.Send(cmd)) {
         if (peer.Receive(cc)) {
-          for (const auto & c : cc) {
-            cout << c.second.Station() << '\n'
-                 << " temperature " << c.second.Temperature() << "F\n"
-                 << " humidity    " << c.second.RelativeHumidity() << "%\n";
-          }
+          PrintCurrentConditions(cout, termTricks, cc);
           cmd = 2;
           if (peer.Send(cmd)) {
             Mcweather::PeriodForecasts  periodForecasts;
             if (peer.Receive(periodForecasts)) {
-              for (const auto & f : periodForecasts.Forecasts()) {
-                termTricks.Bold(cout, true);
-                termTricks.Underscore(cout, true);
-                cout << std::left << setw(15) << f.Name() << ' '
-                     << std::right << setw(3) << f.Temperature()
-                     << f.TemperatureUnit()
-                     << ' ' << f.ShortForecast() << '\n';
-                termTricks.Bold(cout, false);
-                termTricks.Underscore(cout, false);
-                cout << FormattedPeriodForecast(f, termTricks) << "\n\n";
-              }
+              PrintDailyForecasts(cout, termTricks, periodForecasts);
             }
           }
         }
