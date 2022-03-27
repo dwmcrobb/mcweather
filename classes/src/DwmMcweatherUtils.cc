@@ -135,6 +135,7 @@ namespace Dwm {
       nlohmann::json  js;
       if (WebUtils::GetJson(uristr, js)) {
         rc = wcc.FromJson(js);
+        wcc.Timestamp(time((time_t *)0));
         if (rc) {
           if (wcc.Temperature() == INT_MAX) {
             Syslog(LOG_ERR, "Invalid temperature from %s",
