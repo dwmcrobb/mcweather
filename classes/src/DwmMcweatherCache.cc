@@ -465,7 +465,7 @@ namespace Dwm {
       std::time_t  rc = 0;
       struct stat  statbuf;
       if (stat(fsPath.string().c_str(), &statbuf) == 0) {
-        rc = statbuf.st_mtim.tv_sec;
+        rc = statbuf.st_mtime;
       }
       return rc;
     }
