@@ -3,14 +3,14 @@ include ../../Makefile.vars
 OBJFILES = mcweather.o
 OBJDEPS	 = $(OBJFILES:%.o=deps/%_deps)
 CXXFLAGS += -g
-LDFLAGS  += -g
+LDFLAGS  += -Wl,-rpath ${DWMDIR}/lib
 ALLINC   = ${CREDENCEINCS} ${DWMINCS}
 ALLINC   += ${NLOHMANNJSONINC} -I../../classes/include -I.
 POCOLIBS = -lPocoNet -lPocoNetSSL -lPocoCrypto -lPocoUtil -lPocoXML -lPocoJSON -lPocoFoundation
 ALLLIBS  = ../../classes/lib/libDwmMcweather.a ${CREDENCELIBS} ${POCOLIBS} -lsodium
 
 mcweather: ${OBJFILES} ../../classes/lib/libDwmMcweather.a
-	${CXX} -o $@ ${OBJFILES} ${ALLLIBS}
+	${CXX} ${LDFLAGS} -o $@ ${OBJFILES} ${ALLLIBS}
 
 #  dependency rule
 deps/%_deps: %.cc 
