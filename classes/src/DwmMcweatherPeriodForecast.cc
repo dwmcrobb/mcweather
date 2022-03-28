@@ -209,7 +209,7 @@ namespace Dwm {
     std::istream & PeriodForecast::Read(std::istream & is)
     {
       if (is) {
-        time_t  t;
+        int64_t  t;
         if (StreamIO::Read(is, t)) {
           _startTime = chrono::system_clock::from_time_t(t);
           if (StreamIO::Read(is, t)) {
@@ -241,7 +241,7 @@ namespace Dwm {
     std::ostream & PeriodForecast::Write(std::ostream & os) const
     {
       if (os) {
-        time_t  t = chrono::system_clock::to_time_t(_startTime);
+        int64_t  t = chrono::system_clock::to_time_t(_startTime);
         if (StreamIO::Write(os, t)) {
           t = chrono::system_clock::to_time_t(_endTime);
           if (StreamIO::Write(os, t)) {
