@@ -338,13 +338,13 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  //  Dwm::SysLogger::Open("mcweather", LOG_PID|LOG_PERROR, LOG_USER);
+  // Dwm::SysLogger::Open("mcweather", LOG_PID|LOG_PERROR, LOG_USER);
   TerminalTricks  termTricks;
   Credence::Peer  peer;
 
   if (peer.Connect(args.Get<'s'>(), 2124)) {
-    Credence::KeyStash   keyStash("/home/dwm/.credence");
-    Credence::KnownKeys  knownKeys("/home/dwm/.credence");
+    Credence::KeyStash   keyStash;
+    Credence::KnownKeys  knownKeys;
     if (peer.Authenticate(keyStash, knownKeys)) {
       if (args.Get<'o'>()) {
         ShowObservationStations(peer);
