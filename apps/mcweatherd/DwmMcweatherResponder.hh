@@ -94,6 +94,8 @@ namespace Dwm {
       bool HandleCommand(uint8_t cmd);
       bool SendCurrentConditions();
       bool SendPeriodForecasts();
+      bool SendObservationStations();
+      bool SendHourlyForecasts();
       void Run();
     };
     

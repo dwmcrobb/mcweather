@@ -146,6 +146,46 @@ namespace Dwm {
       }
       return rc;
     }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool Responder::SendObservationStations()
+    {
+      bool  rc = false;
+      Cache  cache(_server.GetConfig().CacheDirectory(),
+                   _server.GetConfig().Weather());
+      Cache::ObservationStations  stations;
+      cache.GetObservationStations(stations);
+      if (_peer.Send(stations)) {
+        rc = true;
+      }
+      else {
+        Syslog(LOG_ERR, "Failed to send observation stations to client %s",
+               _peer.Id().c_str());
+      }
+      return rc;
+    }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool Responder::SendHourlyForecasts()
+    {
+      bool  rc = false;
+      Cache  cache(_server.GetConfig().CacheDirectory(),
+                   _server.GetConfig().Weather());
+      PeriodForecasts  forecasts;
+      cache.GetHourlyForecasts(forecasts);
+      if (_peer.Send(forecasts)) {
+        rc = true;
+      }
+      else {
+        Syslog(LOG_ERR, "Failed to send hourly forecasts to client %s",
+               _peer.Id().c_str());
+      }
+      return rc;
+    }
     
     //------------------------------------------------------------------------
     //!  
@@ -154,14 +194,16 @@ namespace Dwm {
     {
       bool  rc = false;
 
-      Syslog(LOG_INFO, "Got cmd %hhu from %s", cmd, _peer.Id().c_str());
       switch (cmd) {
-        case 1:          rc = SendCurrentConditions();   break;
-        case 2:          rc = SendPeriodForecasts();     break;
-#if 0
-        case 3:          SendAllAlerts(os);         break;
-#endif
-        default:         rc = SendCurrentConditions();   break;
+        case 1:     rc = SendCurrentConditions();    break;
+        case 2:     rc = SendPeriodForecasts();      break;
+        case 3:     rc = SendObservationStations();  break;
+        case 4:     rc = SendHourlyForecasts();      break;
+        case 255:                                    break;
+        default:
+          Syslog(LOG_ERR, "Invalid command %hhu from %s", cmd,
+                 _peer.Id().c_str());
+          break;
       }
       return rc;
     }
@@ -173,10 +215,11 @@ namespace Dwm {
     {
       Syslog(LOG_INFO, "Responder started");
       if (_peer.Authenticate(_server.GetKeyStash(), _server.GetKnownKeys())) {
-        Syslog(LOG_INFO, "Authenticated client %s", _peer.Id().c_str());
         uint8_t  cmd;
         while (_peer.Receive(cmd)) {
-          HandleCommand(cmd);
+          if (! HandleCommand(cmd)) {
+            break;
+          }
         }
       }
       else {

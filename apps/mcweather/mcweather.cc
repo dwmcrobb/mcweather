@@ -43,14 +43,36 @@
 #include <iomanip>
 #include <sstream>
 
+#include "DwmArguments.hh"
 #include "DwmSysLogger.hh"
 #include "DwmTerminalTricks.hh"
 #include "DwmCredencePeer.hh"
-#include "DwmMcweatherCurrentConditions.hh"
-#include "DwmMcweatherPeriodForecasts.hh"
+#include "DwmMcweatherCache.hh"
+// #include "DwmMcweatherCurrentConditions.hh"
+// #include "DwmMcweatherPeriodForecasts.hh"
 
 using namespace std;
 using namespace Dwm;
+
+typedef   Dwm::Arguments<Dwm::Argument<'s',string,false>,
+                         Dwm::Argument<'o',bool>,
+                         Dwm::Argument<'c',bool>,
+                         Dwm::Argument<'d',bool>,
+                         Dwm::Argument<'h',bool>>  MyArgType;
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static void InitArgs(MyArgType & args)
+{
+  args.SetHelp<'s'>("mcweatherd host");
+  args.SetValueName<'s'>("host");
+  args.SetHelp<'c'>("get current conditions");
+  args.SetHelp<'d'>("get daily forecasts");
+  args.SetHelp<'h'>("get hourly forecasts");
+  args.SetHelp<'o'>("get observation stations");
+  args.LoadFromEnvironment("MCWEATHER");
+}
 
 //----------------------------------------------------------------------------
 //!  
@@ -63,8 +85,13 @@ PrintCurrentConditions(ostream & os, const Mcweather::CurrentConditions & cc)
      << std::right << setw(4) << cc.RelativeHumidity() << "%  "
      << std::right << setw(4) << cc.Dewpoint() << "F  "
      << std::right << std::setprecision(2) << std::fixed << std::setw(5)
-     << cc.BarometricPressure() * 0.0002952998751 << " in. Hg  "
-     << std::right << setw(5) << cc.WindSpeed() << " mph  ";
+     << cc.BarometricPressure() * 0.0002952998751 << " in. Hg  ";
+  if (cc.WindSpeed() != INT_MAX) {
+    os << std::right << setw(5) << cc.WindSpeed() << " mph  ";
+  }
+  else {
+    os << std::right << "   ---   " << "  ";
+  }
   if (cc.WindChill() != INT_MAX) {
     os << std::right << setw(8) << cc.WindChill() << "F  ";
   }
@@ -165,35 +192,177 @@ static void PrintDailyForecasts(ostream & os, TerminalTricks & termTricks,
   }
   return;
 }
-                                
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static void PrintHourlyForecasts(ostream & os, TerminalTricks & termTricks,
+                                 const Mcweather::PeriodForecasts & forecasts)
+{
+  string  secTitle("Hourly Forecasts");
+  int  leadingCols = (termTricks.Columns() - secTitle.size()) / 2;
+  os << setw(leadingCols) << ' '
+     << termTricks.Underscore(termTricks.Bold(secTitle)) << "\n\n";
+
+  for (const auto & f : forecasts.Forecasts()) {
+    // termTricks.Bold(os, true);
+    // termTricks.Underscore(os, true);
+    time_t  startTime =  std::chrono::system_clock::to_time_t(f.StartTime());
+    struct tm  tm;
+    localtime_r(&startTime, &tm);
+    char  tmbuf[24];
+    strftime(tmbuf, 24, "%a %b %d %H:%M", &tm);
+    os << std::left << setw(15) << tmbuf << "  "
+       << std::right << setw(3) << f.Temperature()
+       << f.TemperatureUnit()
+       << "  " << f.ShortForecast() << '\n';
+    //    termTricks.Bold(os, false);
+    //    termTricks.Underscore(os, false);
+  }
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool ShowHourlyForecasts(Credence::Peer & peer,
+                                TerminalTricks & termTricks)
+{
+  bool  rc = false;
+  uint8_t  cmd = 4;
+  if (peer.Send(cmd)) {
+    Mcweather::PeriodForecasts  hourlyForecasts;
+    if (peer.Receive(hourlyForecasts)) {
+      PrintHourlyForecasts(cout, termTricks, hourlyForecasts);
+      rc = true;
+    }
+    else {
+      cerr << "Failed to receive hourly forecasts from " << peer.Id() << '\n';
+    }
+  }
+  else {
+    cerr << "Failed to send hourly forecast request to " << peer.Id() << '\n';
+  }
+  return rc;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool ShowObservationStations(Credence::Peer & peer)
+{
+  bool  rc = false;
+  
+  uint8_t  cmd = 3;
+  if (peer.Send(cmd)) {
+    Mcweather::Cache::ObservationStations  stations;
+    if (peer.Receive(stations)) {
+      for (const auto & station : stations) {
+        cout << station.first << ' ' << station.second << '\n';
+      }
+      rc = true;
+    }
+    else {
+      cerr << "Failed to receive observation stations from "
+           << peer.Id() << '\n';
+    }
+  }
+  else {
+    cerr << "Failed to send observation station request to "
+         << peer.Id() << '\n';
+  }
+  return rc;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool ShowCurrentConditions(Credence::Peer & peer,
+                                  TerminalTricks & termTricks)
+{
+  bool  rc = false;
+  uint8_t  cmd = 1;
+  if (peer.Send(cmd)) {
+    map<string,Mcweather::CurrentConditions>  cc;
+    if (peer.Receive(cc)) {
+      PrintCurrentConditions(cout, termTricks, cc);
+      rc = true;
+    }
+    else {
+      cerr << "Failed to receive current conditions from "
+           << peer.Id() << '\n';
+    }
+  }
+  else {
+    cerr << "Failed to send current conditions request to "
+         << peer.Id() << '\n';
+  }
+  return rc;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool ShowDailyForecasts(Credence::Peer & peer,
+                               TerminalTricks & termTricks)
+{
+  bool  rc = false;
+  uint8_t  cmd = 2;
+  if (peer.Send(cmd)) {
+    Mcweather::PeriodForecasts  dailyForecasts;
+    if (peer.Receive(dailyForecasts)) {
+      PrintDailyForecasts(cout, termTricks, dailyForecasts);
+      rc = true;
+    }
+    else {
+      cerr << "Failed to receive daily forecasts from " << peer.Id() << '\n';
+    }
+  }
+  else {
+    cerr << "Failed to send daily forecast request to " << peer.Id() << '\n';
+  }
+  return rc;
+}
+
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
+  MyArgType  args;
+  InitArgs(args);
+  
+  int  argind = args.Parse(argc, argv);
+  if (argind < 0) {
+    cerr << args.Usage(argv[0], "");
+    exit(1);
+  }
+
   //  Dwm::SysLogger::Open("mcweather", LOG_PID|LOG_PERROR, LOG_USER);
   TerminalTricks  termTricks;
   Credence::Peer  peer;
 
-  if (peer.Connect("127.0.0.1", 2124)) {
+  if (peer.Connect(args.Get<'s'>(), 2124)) {
     Credence::KeyStash   keyStash("/home/dwm/.credence");
     Credence::KnownKeys  knownKeys("/home/dwm/.credence");
     if (peer.Authenticate(keyStash, knownKeys)) {
-      map<string,Mcweather::CurrentConditions>  cc;
-      uint8_t  cmd = 1;
-      if (peer.Send(cmd)) {
-        if (peer.Receive(cc)) {
-          PrintCurrentConditions(cout, termTricks, cc);
-          cmd = 2;
-          if (peer.Send(cmd)) {
-            Mcweather::PeriodForecasts  periodForecasts;
-            if (peer.Receive(periodForecasts)) {
-              PrintDailyForecasts(cout, termTricks, periodForecasts);
-            }
-          }
-        }
+      if (args.Get<'o'>()) {
+        ShowObservationStations(peer);
       }
-      
+      if (args.Get<'c'>()) {
+        ShowCurrentConditions(peer, termTricks);
+      }
+      if (args.Get<'d'>()) {
+        ShowDailyForecasts(peer, termTricks);
+      }
+      if (args.Get<'h'>()) {
+        ShowHourlyForecasts(peer, termTricks);
+      }
+      peer.Send((uint8_t)255);
     }
+  }
+  else {
+    cerr << "Failed to connect to " << args.Get<'s'>() << '\n';
+    return 1;
   }
 }
