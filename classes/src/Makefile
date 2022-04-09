@@ -1,6 +1,6 @@
 include ../../Makefile.vars
 
-ALLINC       = -I../include ${CREDENCEINCS}
+ALLINC       = -I../include ${DWMWEBUTILSINCS} ${CREDENCEINCS}
 OBJFILESNP   = DwmMcweatherCache.o \
                DwmMcweatherConfigLex.o \
                DwmMcweatherConfigParse.o \
@@ -11,8 +11,7 @@ OBJFILESNP   = DwmMcweatherCache.o \
                DwmMcweatherServiceConfig.o \
                DwmMcweatherUtils.o \
                DwmMcweatherWeatherConfig.o \
-               DwmMcweatherWeatherFetcher.o \
-               DwmMcweatherWebUtils.o
+               DwmMcweatherWeatherFetcher.o
 OBJFILES     = $(OBJFILESNP:%=../obj/%)
 OBJDEPS      = $(OBJFILESNP:%.o=deps/%_deps)
 

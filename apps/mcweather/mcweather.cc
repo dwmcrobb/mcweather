@@ -36,9 +36,10 @@
 //---------------------------------------------------------------------------
 //!  \file mcweather.cc
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief simple client for mcweatherd
 //---------------------------------------------------------------------------
 
+#include <ctime>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -87,23 +88,30 @@ PrintCurrentConditions(ostream & os, const Mcweather::CurrentConditions & cc)
      << std::right << std::setprecision(2) << std::fixed << std::setw(5)
      << cc.BarometricPressure() * 0.0002952998751 << " in. Hg  ";
   if (cc.WindSpeed() != INT_MAX) {
-    os << std::right << setw(5) << cc.WindSpeed() << " mph  ";
+    os << std::right << setw(3) << cc.WindSpeed() << " mph  ";
   }
   else {
-    os << std::right << "   ---   " << "  ";
+    os << std::right << "    ---" << "  ";
   }
   if (cc.WindChill() != INT_MAX) {
-    os << std::right << setw(8) << cc.WindChill() << "F  ";
+    os << std::right << setw(4) << cc.WindChill() << "F  ";
   }
   else {
-    os << std::right << setw(9) << "   ---   " << "  ";
+    os << std::right << setw(5) << "  ---" << "  ";
   }
   if (cc.HeatIndex() != INT_MAX) {
-    os << std::right << setw(8) << cc.HeatIndex() << "F";
+    os << std::right << setw(6) << cc.HeatIndex() << "F  ";
   }
   else {
-    os << std::right << setw(9) << "   ---   ";
+    os << std::right << setw(7) << "    ---  ";
   }
+  time_t     t = cc.Timestamp();
+  struct tm  tm;
+  localtime_r(&t, &tm);
+  char  timestr[8] = {0};
+  strftime(timestr, 8, "%H:%M", &tm);
+  os << std::right << setw(5) << timestr;
+  
   os << '\n';
   return;
 }
@@ -127,13 +135,22 @@ PrintCurrentConditions(ostream & os, TerminalTricks & termTricks,
      << std::right << setw(5) << termTricks.Underscore("Humid") << "  "
      << std::right << setw(5) << termTricks.Underscore("DewPt") << "  "
      << std::right << setw(12) << termTricks.Underscore("Bar Pressure") << "  "
-     << std::right << setw(9) << termTricks.Underscore("WindSpeed") << "  "
-     << std::right << setw(9) << termTricks.Underscore("WindChill") << "  "
-     << std::right << setw(9) << termTricks.Underscore("HeatIndex") << "  "
+     << std::right << setw(7) << termTricks.Underscore("WindSpd") << "  "
+     << std::right << setw(5) << termTricks.Underscore("Chill") << "  "
+     << std::right << setw(7) << termTricks.Underscore("HeatIdx") << "  "
+     << std::right << setw(5) << termTricks.Underscore(" Time") << "  "
      << '\n';
-  
+
+  vector<Mcweather::CurrentConditions>  ccv;
   for (auto & c : cc) {
-    PrintCurrentConditions(os, c.second);
+    ccv.push_back(c.second);
+  }
+  std::sort(ccv.begin(), ccv.end(),
+            [&] (const Mcweather::CurrentConditions & a,
+                 const Mcweather::CurrentConditions & b)
+            { return (a.Timestamp() > b.Timestamp()); });
+  for (auto & c : ccv) {
+    PrintCurrentConditions(os, c);
   }
   os << '\n';
   
@@ -211,7 +228,7 @@ static void PrintHourlyForecasts(ostream & os, TerminalTricks & termTricks,
     struct tm  tm;
     localtime_r(&startTime, &tm);
     char  tmbuf[24];
-    strftime(tmbuf, 24, "%a %b %d %H:%M", &tm);
+    strftime(tmbuf, 24, "%a %b %e %H:%M", &tm);
     os << std::left << setw(15) << tmbuf << "  "
        << std::right << setw(3) << f.Temperature()
        << f.TemperatureUnit()

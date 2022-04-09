@@ -65,6 +65,13 @@ AC_SUBST(DWMDIR)
 AC_SUBST(DWMINCS)
 AC_SUBST(DWMLIBS)
 
+DWMWEBUTILSDIR=`pkg-config --variable=prefix libDwmWebUtils`
+DWMWEBUTILSINCS=`pkg-config --cflags-only-I libDwmWebUtils`
+DWMWEBUTILSLIBS=`pkg-config --libs libDwmWebUtils`
+AC_SUBST(DWMWEBUTILSDIR)
+AC_SUBST(DWMWEBUTILSINCS)
+AC_SUBST(DWMWEBUTILSLIBS)
+
 DWMCREDENCEDIR=`pkg-config --variable=prefix libDwmCredence`
 DWMCREDENCEINCS=`pkg-config --cflags-only-I libDwmCredence`
 DWMCREDENCELIBS=`pkg-config --libs libDwmCredence`

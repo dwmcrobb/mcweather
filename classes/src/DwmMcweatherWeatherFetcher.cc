@@ -42,11 +42,11 @@
 #include <fstream>
 #include <sstream>
 
+#include "DwmWebUtils.hh"
 #include "DwmSysLogger.hh"
 #include "DwmMcweatherCache.hh"
 #include "DwmMcweatherCurrentConditions.hh"
 #include "DwmMcweatherUtils.hh"
-#include "DwmMcweatherWebUtils.hh"
 #include "DwmMcweatherWeatherFetcher.hh"
 
 namespace Dwm {

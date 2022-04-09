@@ -46,7 +46,7 @@
 
 #include "DwmSysLogger.hh"
 #include "DwmCredenceUtils.hh"
-#include "DwmMcweatherWebUtils.hh"
+#include "DwmWebUtils.hh"
 #include "DwmMcweatherUtils.hh"
 
 namespace Dwm {

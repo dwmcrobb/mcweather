@@ -6,10 +6,9 @@ OBJFILES = mcweatherd.o \
 OBJDEPS	 = $(OBJFILES:%.o=deps/%_deps)
 CXXFLAGS += -g
 LDFLAGS  += -g
-ALLINC   = ${CREDENCEINCS} ${DWMINCS}
+ALLINC   = ${CREDENCEINCS} ${DWMWEBUTILSINCS}
 ALLINC   += ${NLOHMANNJSONINC} -I../../classes/include -I.
-POCOLIBS = -lPocoNet -lPocoNetSSL -lPocoCrypto -lPocoUtil -lPocoXML -lPocoJSON -lPocoFoundation
-ALLLIBS  = ../../classes/lib/libDwmMcweather.a ${CREDENCELIBS} ${POCOLIBS} -lsodium
+ALLLIBS  = ../../classes/lib/libDwmMcweather.a ${CREDENCELIBS} ${DWMWEBUTILSLIBS}
 
 mcweatherd: ${OBJFILES} ../../classes/lib/libDwmMcweather.a
 	${CXX} -o $@ ${OBJFILES} ${ALLLIBS}

@@ -70,6 +70,8 @@ namespace Dwm {
     {
       boost::system::error_code  ec;
       s.native_non_blocking(false, ec);
+      _peer.SetKeyExchangeTimeout(chrono::milliseconds(2000));
+      _peer.SetIdExchangeTimeout(chrono::milliseconds(2000));
       if (_peer.Accept(std::move(s))) {
         _thread = thread(&Responder::Run, this);
         _running.store(true);

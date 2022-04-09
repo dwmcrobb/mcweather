@@ -56,7 +56,6 @@ extern "C" {
 #include "DwmSysLogger.hh"
 #include "DwmMcweatherCache.hh"
 #include "DwmMcweatherUtils.hh"
-#include "DwmMcweatherWebUtils.hh"
 
 namespace Dwm {
 
