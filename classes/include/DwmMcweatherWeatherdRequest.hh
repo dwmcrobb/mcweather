@@ -1,7 +1,7 @@
 //===========================================================================
 // @(#) $DwmPath$
 //===========================================================================
-//  Copyright (c) Daniel W. McRobb 2020, 2022
+//  Copyright (c) Daniel W. McRobb 2022
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -34,74 +34,42 @@
 //===========================================================================
 
 //---------------------------------------------------------------------------
-//!  \file DwmMcweatherResponder.hh
+//!  \file DwmMcweatherWeatherdRequest.hh
 //!  \author Daniel W. McRobb
-//!  \brief Dwm::Mcweather::Responder class declaration
+//!  \brief Dwm::Mcweather::WeatherdRequest declaration
 //---------------------------------------------------------------------------
 
-#ifndef _DWMMCWEATHERRESPONDER_HH_
-#define _DWMMCWEATHERRESPONDER_HH_
+#ifndef _DWMMCWEATHERWEATHERDREQUEST_HH_
+#define _DWMMCWEATHERWEATHERDREQUEST_HH_
 
-extern "C" {
-  #include <sys/types.h>
-  #include <sys/socket.h>
-  #include <netinet/in.h>
-  #include <arpa/inet.h>
-}
-
-#include <string>
-#include <thread>
-
-#include "DwmCredencePeer.hh"
-#include "DwmMcweatherWeatherdRequest.hh"
+#include <cstdint>
 
 namespace Dwm {
 
   namespace Mcweather {
 
-    class Server;
-    
     //------------------------------------------------------------------------
-    //!  Encapsulates a thread that responds to requests from a single
-    //!  client.
+    //!  Requests that can be set to @c mcweatherd.
+    //!
+    //!  @c e_currentConditions requests a @c map<string,CurrentConditions> of
+    //!  current weather conditions, where the map keys are observation
+    //!  stations.
+    //!  @c e_dailyforecasts requests a @c PeriodForecasts containing daily
+    //!  forecasts.
+    //!  @c e_observationStations requests a @c Cache::ObservationStations.
+    //!  @c e_hourlyForecasts requests a @c PeriodForecasts containing hourly
+    //!  forecasts.
     //------------------------------------------------------------------------
-    class Responder
-    {
-    public:
-      //--------------------------------------------------------------------
-      //!  Construct from the given socket @c s, Server @c server,
-      //!  AlertOrigin @c origin and end point @c endPoint.
-      //--------------------------------------------------------------------
-      Responder(boost::asio::ip::tcp::socket && s, Server & server);
-
-      //----------------------------------------------------------------------
-      //!  Destructor.
-      //----------------------------------------------------------------------
-      ~Responder();
-      
-      //----------------------------------------------------------------------
-      //!  Join the responder's thread.  Returns true if the thread is
-      //!  joinable and done, and we successfully joined it.
-      //----------------------------------------------------------------------
-      bool Join();
-      
-    private:
-      Credence::Peer        _peer;
-      Server               &_server;
-      std::string           _agreedKey;
-      std::thread           _thread;
-      std::atomic<bool>     _running;
-
-      bool HandleRequest(WeatherdRequest cmd);
-      bool SendCurrentConditions();
-      bool SendPeriodForecasts();
-      bool SendObservationStations();
-      bool SendHourlyForecasts();
-      void Run();
+    enum WeatherdRequest : std::uint8_t {
+      e_currentConditions   = 1,
+      e_dailyForecasts      = 2,
+      e_observationStations = 3,
+      e_hourlyForecasts     = 4,
+      e_buhBye              = 255
     };
-    
+
   }  // namespace Mcweather
 
 }  // namespace Dwm
 
-#endif  // _DWMMCWEATHERRESPONDER_HH_
+#endif  // _DWMMCWEATHERWEATHERDREQUEST_HH_

@@ -49,6 +49,8 @@
 #include "DwmTerminalTricks.hh"
 #include "DwmCredencePeer.hh"
 #include "DwmMcweatherCache.hh"
+#include "DwmMcweatherWeatherdRequest.hh"
+
 // #include "DwmMcweatherCurrentConditions.hh"
 // #include "DwmMcweatherPeriodForecasts.hh"
 
@@ -246,8 +248,8 @@ static bool ShowHourlyForecasts(Credence::Peer & peer,
                                 TerminalTricks & termTricks)
 {
   bool  rc = false;
-  uint8_t  cmd = 4;
-  if (peer.Send(cmd)) {
+  uint8_t  req = Mcweather::e_hourlyForecasts;
+  if (peer.Send(req)) {
     Mcweather::PeriodForecasts  hourlyForecasts;
     if (peer.Receive(hourlyForecasts)) {
       PrintHourlyForecasts(cout, termTricks, hourlyForecasts);
@@ -270,8 +272,8 @@ static bool ShowObservationStations(Credence::Peer & peer)
 {
   bool  rc = false;
   
-  uint8_t  cmd = 3;
-  if (peer.Send(cmd)) {
+  uint8_t  req = Mcweather::e_observationStations;
+  if (peer.Send(req)) {
     Mcweather::Cache::ObservationStations  stations;
     if (peer.Receive(stations)) {
       for (const auto & station : stations) {
@@ -298,8 +300,8 @@ static bool ShowCurrentConditions(Credence::Peer & peer,
                                   TerminalTricks & termTricks)
 {
   bool  rc = false;
-  uint8_t  cmd = 1;
-  if (peer.Send(cmd)) {
+  uint8_t  req = Mcweather::e_currentConditions;
+  if (peer.Send(req)) {
     map<string,Mcweather::CurrentConditions>  cc;
     if (peer.Receive(cc)) {
       PrintCurrentConditions(cout, termTricks, cc);
@@ -324,8 +326,8 @@ static bool ShowDailyForecasts(Credence::Peer & peer,
                                TerminalTricks & termTricks)
 {
   bool  rc = false;
-  uint8_t  cmd = 2;
-  if (peer.Send(cmd)) {
+  uint8_t  req = Mcweather::e_dailyForecasts;
+  if (peer.Send(req)) {
     Mcweather::PeriodForecasts  dailyForecasts;
     if (peer.Receive(dailyForecasts)) {
       PrintDailyForecasts(cout, termTricks, dailyForecasts);

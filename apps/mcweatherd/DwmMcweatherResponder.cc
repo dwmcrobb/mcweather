@@ -192,16 +192,16 @@ namespace Dwm {
     //------------------------------------------------------------------------
     //!  
     //------------------------------------------------------------------------
-    bool Responder::HandleCommand(uint8_t cmd)
+    bool Responder::HandleRequest(WeatherdRequest cmd)
     {
       bool  rc = false;
 
       switch (cmd) {
-        case 1:     rc = SendCurrentConditions();    break;
-        case 2:     rc = SendPeriodForecasts();      break;
-        case 3:     rc = SendObservationStations();  break;
-        case 4:     rc = SendHourlyForecasts();      break;
-        case 255:                                    break;
+        case e_currentConditions:    rc = SendCurrentConditions();    break;
+        case e_dailyForecasts:       rc = SendPeriodForecasts();      break;
+        case e_observationStations:  rc = SendObservationStations();  break;
+        case e_hourlyForecasts:      rc = SendHourlyForecasts();      break;
+        case e_buhBye:                                                break;
         default:
           Syslog(LOG_ERR, "Invalid command %hhu from %s", cmd,
                  _peer.Id().c_str());
@@ -217,9 +217,9 @@ namespace Dwm {
     {
       Syslog(LOG_INFO, "Responder started");
       if (_peer.Authenticate(_server.GetKeyStash(), _server.GetKnownKeys())) {
-        uint8_t  cmd;
-        while (_peer.Receive(cmd)) {
-          if (! HandleCommand(cmd)) {
+        WeatherdRequest  cmd;
+        while (_peer.Receive((uint8_t &)cmd)) {
+          if (! HandleRequest(cmd)) {
             break;
           }
         }

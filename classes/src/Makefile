@@ -1,6 +1,6 @@
 include ../../Makefile.vars
 
-ALLINC       = -I../include ${DWMWEBUTILSINCS} ${CREDENCEINCS}
+ALLINC       = -I../include ${DWMINCS}
 OBJFILESNP   = DwmMcweatherCache.o \
                DwmMcweatherConfigLex.o \
                DwmMcweatherConfigParse.o \
@@ -47,6 +47,17 @@ DwmMcweatherConfigParse.cc: DwmMcweatherConfigParse.y
 DwmMcweatherConfigLex.cc: DwmMcweatherConfigLex.lex DwmMcweatherConfigParse.hh
 	flex -o$@ $<
 
-clean::
+tarprep: ${TARDIR}/lib/libDwmMcweather.a
+
+${TARDIR}/lib/libDwmMcweather.a: ../lib/libDwmMcweather.a
+	../../install-sh -c $< $@
+
+clean:: clean-tarprep
 	rm -f ${OBJFILES} DwmMcweatherConfigParse.cc DwmMcweatherConfigParse.hh
 	rm -f DwmMcweatherConfigLex.cc
+
+distclean:: clean
+	rm -f ${OBJDEPS}
+
+clean-tarprep::
+	rm -f ${TARDIR}/lib/libDwmMcweather.a

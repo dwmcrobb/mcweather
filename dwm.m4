@@ -221,7 +221,7 @@ define(DWM_SET_PKGVARS,[
       ;;
     linux*)
       OSNAME="linux"
-      OSVERSION=`kernelversion`
+      OSVERSION=`uname -r | cut -d- -f1`
       OSARCH=`uname -m`
       case $OSARCH in
 	i[[3456]]86)
@@ -797,6 +797,60 @@ define(DWM_CHECK_LIBSTDCPPFS,[
                LIBS="$prev_LIBS"])
   CXXFLAGS="$prev_CPPFLAGS"
   AC_LANG_POP()
+])
+
+dnl #------------------------------------------------------------------------
+define(DWM_CHECK_LIBDWM,[
+  AC_MSG_CHECKING([for libDwm])
+  AC_LANG_PUSH(C++)
+  prev_CXXFLAGS="$CXXFLAGS"
+  libDwmCxxFlags=`pkg-config --cflags libDwm 2>/dev/null`
+  CXXFLAGS="${CXXFLAGS} ${libDwmCxxFlags}"
+  AC_TRY_COMPILE([
+    #include "DwmSysLogger.hh"
+    ],
+    [Dwm::SysLogger::ShowFileLocation(true);],
+    [AC_MSG_RESULT(found)],
+    [AC_MSG_RESULT(not found)
+      echo libDwm is required \!\!
+      exit 1])
+  CXXFLAGS="${prev_CXXFLAGS}"
+])
+
+dnl #------------------------------------------------------------------------
+define(DWM_CHECK_LIBDWMCREDENCE,[
+  AC_MSG_CHECKING([for libDwmCredence])
+  AC_LANG_PUSH(C++)
+  prev_CXXFLAGS="$CXXFLAGS"
+  libDwmCredenceCxxFlags=`pkg-config --cflags libDwmCredence 2>/dev/null`
+  CXXFLAGS="${CXXFLAGS} ${libDwmCredenceCxxFlags}"
+  AC_TRY_COMPILE([
+    #include "DwmCredencePeer.hh"
+    ],
+    [Dwm::Credence::Peer peer;],
+    [AC_MSG_RESULT(found)],
+    [AC_MSG_RESULT(not found)
+      echo libDwmCredence is required \!\!
+      exit 1])
+  CXXFLAGS="${prev_CXXFLAGS}"
+])
+
+dnl #------------------------------------------------------------------------
+define(DWM_CHECK_LIBDWMWEBUTILS,[
+  AC_MSG_CHECKING([for libDwmWebUtils])
+  AC_LANG_PUSH(C++)
+  prev_CXXFLAGS="$CXXFLAGS"
+  libDwmWebUtilsCxxFlags=`pkg-config --cflags libDwmWebUtils 2>/dev/null`
+  CXXFLAGS="${CXXFLAGS} ${libDwmWebUtilsCxxFlags}"
+  AC_TRY_COMPILE([
+    #include "DwmWebUtilsUrl.hh"
+    ],
+    [Dwm::WebUtils::Url  url;],
+    [AC_MSG_RESULT(found)],
+    [AC_MSG_RESULT(not found)
+      echo libDwmWebUtils is required \!\!
+      exit 1])
+  CXXFLAGS="${prev_CXXFLAGS}"
 ])
 
 dnl #------------------------------------------------------------------------

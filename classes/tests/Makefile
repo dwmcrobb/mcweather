@@ -6,10 +6,9 @@ OBJDEPS	 = $(OBJFILES:%.o=deps/%_deps)
 TESTS	 = $(OBJFILES:%.o=%)
 CXXFLAGS += -g
 LDFLAGS  += -g
-ALLINC   = ${CREDENCEINCS} ${DWMINCS}
-ALLINC   += ${NLOHMANNJSONINC} -I../include -I.
-ALLLIBS  = -L../../classes/lib -lDwmMcweather ${CREDENCELIBS}
-ALLLIBS   += ${CREDENCELIBS}
+ALLINC   = ${DWMINCS}
+ALLINC   += ${NLOHMANNJSONINC} -I../include
+ALLLIBS  = -L../../classes/lib -lDwmMcweather ${DWMLIBS}
 
 all: ${TESTS}
 

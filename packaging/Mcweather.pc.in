@@ -6,6 +6,6 @@ includedir=${prefix}/include/libDwmMcweather
 Name: Mcweather
 Description: Weather cache and server
 Version: @TAGVERSION@
-Requires: libDwmCredence
-Libs: @PTHREADLDFLAGS@ -L${libdir} -lDwmMcweather -lDwmCredence -lDwm @BZ2LIB@ @BOOSTLIBS@ @ZLIB@ @KVMLIB@ @TERMCAPLIB@ @OSLIBS@
-Cflags: @PTHREADCXXFLAGS@ -I${includedir} @BOOSTINC@
+Requires: libDwmCredence, libDwm, libDwmWebUtils
+Libs: @PTHREADLDFLAGS@ -L${libdir} @DWMLIBS@ @BZ2LIB@ @KVMLIB@ @TERMCAPLIB@
+Cflags: @PTHREADCXXFLAGS@ -I${includedir} @DWMINCS@ @BOOSTINC@

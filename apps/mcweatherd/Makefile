@@ -6,9 +6,10 @@ OBJFILES = mcweatherd.o \
 OBJDEPS	 = $(OBJFILES:%.o=deps/%_deps)
 CXXFLAGS += -g
 LDFLAGS  += -g
-ALLINC   = ${CREDENCEINCS} ${DWMWEBUTILSINCS}
+ALLINC   = ${DWMINCS}
 ALLINC   += ${NLOHMANNJSONINC} -I../../classes/include -I.
-ALLLIBS  = ../../classes/lib/libDwmMcweather.a ${CREDENCELIBS} ${DWMWEBUTILSLIBS}
+ALLLIBS  = ../../classes/lib/libDwmMcweather.a ${DWMLIBS}
+TARTARGETS  = ${TARDIR}/sbin/mcweatherd
 
 mcweatherd: ${OBJFILES} ../../classes/lib/libDwmMcweather.a
 	${CXX} -o $@ ${OBJFILES} ${ALLLIBS}
@@ -32,5 +33,13 @@ endif
 ../../classes/lib/libMcweather.a::
 	${MAKE} -C ../../classes/src
 
-clean:
-	${LIBTOOL} --mode=clean rm -f mcweatherd ${OBJFILES}
+tarprep: ${TARTARGETS}
+
+${TARDIR}/sbin/mcweatherd: mcweatherd
+	../../install-sh -s -c -m 555 $< $@
+
+clean:: clean-tarprep
+	rm -f mcweatherd ${OBJFILES}
+
+clean-tarprep::
+	rm -f ${TARTARGETS}
