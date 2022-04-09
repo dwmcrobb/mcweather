@@ -6,8 +6,7 @@ CXXFLAGS += -g
 LDFLAGS  += -Wl,-rpath ${DWMDIR}/lib
 ALLINC   = ${CREDENCEINCS} ${DWMINCS}
 ALLINC   += ${NLOHMANNJSONINC} -I../../classes/include -I.
-POCOLIBS = -lPocoNet -lPocoNetSSL -lPocoCrypto -lPocoUtil -lPocoXML -lPocoJSON -lPocoFoundation
-ALLLIBS  = ../../classes/lib/libDwmMcweather.a ${CREDENCELIBS} ${POCOLIBS} -lsodium
+ALLLIBS  = ../../classes/lib/libDwmMcweather.a ${CREDENCELIBS}
 
 mcweather: ${OBJFILES} ../../classes/lib/libDwmMcweather.a
 	${CXX} ${LDFLAGS} -o $@ ${OBJFILES} ${ALLLIBS}
