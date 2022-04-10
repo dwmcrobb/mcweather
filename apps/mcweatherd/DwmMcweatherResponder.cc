@@ -36,7 +36,7 @@
 //---------------------------------------------------------------------------
 //!  \file DwmMcweatherResponder.cc
 //!  \author Daniel W. McRobb
-//!  \brief NOT YET DOCUMENTED
+//!  \brief Dwm::Mcweather::Responder class implementation
 //---------------------------------------------------------------------------
 
 extern "C" {
@@ -55,6 +55,7 @@ extern "C" {
 #include "DwmCredencePeer.hh"
 #include "DwmMcweatherCache.hh"
 #include "DwmMcweatherServer.hh"
+#include "DwmMcweatherUtils.hh"
 
 namespace Dwm {
 
@@ -188,6 +189,25 @@ namespace Dwm {
       }
       return rc;
     }
+
+    //------------------------------------------------------------------------
+    //!  
+    //------------------------------------------------------------------------
+    bool Responder::SendNWSRadarURL()
+    {
+      bool  rc = false;
+      string  url =
+        Utils::GetNWSRadarURL(_server.GetConfig().Weather().Latitude(),
+                              _server.GetConfig().Weather().Longitude());
+      if (_peer.Send(url)) {
+        rc = true;
+      }
+      else {
+        Syslog(LOG_ERR, "Failed to send NWS radar URL to client %s",
+               _peer.Id().c_str());
+      }
+      return rc;
+    }
     
     //------------------------------------------------------------------------
     //!  
@@ -201,6 +221,7 @@ namespace Dwm {
         case e_dailyForecasts:       rc = SendPeriodForecasts();      break;
         case e_observationStations:  rc = SendObservationStations();  break;
         case e_hourlyForecasts:      rc = SendHourlyForecasts();      break;
+        case e_nwsRadarUrl:          rc = SendNWSRadarURL();          break;
         case e_buhBye:                                                break;
         default:
           Syslog(LOG_ERR, "Invalid command %hhu from %s", cmd,

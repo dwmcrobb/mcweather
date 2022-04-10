@@ -61,7 +61,8 @@ typedef   Dwm::Arguments<Dwm::Argument<'s',string,false>,
                          Dwm::Argument<'o',bool>,
                          Dwm::Argument<'c',bool>,
                          Dwm::Argument<'d',bool>,
-                         Dwm::Argument<'h',bool>>  MyArgType;
+                         Dwm::Argument<'h',bool>,
+                         Dwm::Argument<'r',bool>>  MyArgType;
 
 //----------------------------------------------------------------------------
 //!  
@@ -74,6 +75,7 @@ static void InitArgs(MyArgType & args)
   args.SetHelp<'d'>("get daily forecasts");
   args.SetHelp<'h'>("get hourly forecasts");
   args.SetHelp<'o'>("get observation stations");
+  args.SetHelp<'r'>("get NWS radar URL");
   args.LoadFromEnvironment("MCWEATHER");
 }
 
@@ -346,6 +348,41 @@ static bool ShowDailyForecasts(Credence::Peer & peer,
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
+static void PrintNWSRadarURL(ostream & os, TerminalTricks & termTricks,
+                             string radarUrl)
+{
+  os << termTricks.Underscore(termTricks.Bold("NWS radar URL")) << '\n'
+     << radarUrl << "\n\n";
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static bool ShowNWSRadarURL(Credence::Peer & peer,
+                            TerminalTricks & termTricks)
+{
+  bool  rc = false;
+  uint8_t  req = Mcweather::e_nwsRadarUrl;
+  if (peer.Send(req)) {
+    string  radarUrl;
+    if (peer.Receive(radarUrl)) {
+      PrintNWSRadarURL(cout, termTricks, radarUrl);
+      rc = true;
+    }
+    else {
+      cerr << "Failed to receive NWS radar URL from " << peer.Id() << '\n';
+    }
+  }
+  else {
+    cerr << "Failed to send NWS radar URL request to " << peer.Id() << '\n';
+  }
+  return rc;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
   MyArgType  args;
@@ -376,6 +413,9 @@ int main(int argc, char *argv[])
       }
       if (args.Get<'h'>()) {
         ShowHourlyForecasts(peer, termTricks);
+      }
+      if (args.Get<'r'>()) {
+        ShowNWSRadarURL(peer, termTricks);
       }
       peer.Send((uint8_t)255);
     }

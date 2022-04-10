@@ -59,12 +59,15 @@ namespace Dwm {
     //!  @c e_observationStations requests a @c Cache::ObservationStations.
     //!  @c e_hourlyForecasts requests a @c PeriodForecasts containing hourly
     //!  forecasts.
+    //!  @c e_nwsRadarUrl requests a @c string containing the URL for the
+    //!  NWS radar page.
     //------------------------------------------------------------------------
     enum WeatherdRequest : std::uint8_t {
       e_currentConditions   = 1,
       e_dailyForecasts      = 2,
       e_observationStations = 3,
       e_hourlyForecasts     = 4,
+      e_nwsRadarUrl         = 5,
       e_buhBye              = 255
     };
 

@@ -97,6 +97,7 @@ namespace Dwm {
       bool SendPeriodForecasts();
       bool SendObservationStations();
       bool SendHourlyForecasts();
+      bool SendNWSRadarURL();
       void Run();
     };
     
