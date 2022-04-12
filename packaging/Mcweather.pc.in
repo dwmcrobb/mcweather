@@ -7,5 +7,5 @@ Name: Mcweather
 Description: Weather cache and server
 Version: @TAGVERSION@
 Requires: libDwmCredence, libDwm, libDwmWebUtils
-Libs: @PTHREADLDFLAGS@ -L${libdir} @DWMLIBS@ @BZ2LIB@ @KVMLIB@ @TERMCAPLIB@
+Libs: @PTHREADLDFLAGS@ -L${libdir} @DWMLIBS@ @KVMLIB@
 Cflags: @PTHREADCXXFLAGS@ -I${includedir} @DWMINCS@ @BOOSTINC@
