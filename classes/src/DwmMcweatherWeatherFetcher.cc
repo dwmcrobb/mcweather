@@ -95,9 +95,11 @@ namespace Dwm {
     //------------------------------------------------------------------------
     bool WeatherFetcher::Stop()
     {
-      lock_guard<mutex>  lk(_runmtx);
-      _run = false;
-      _runcv.notify_one();
+      {
+        lock_guard<mutex>  lk(_runmtx);
+        _run = false;
+        _runcv.notify_all();
+      }
       if (_thread.joinable()) {
         _thread.join();
         Syslog(LOG_INFO, "WeatherFetcher thread joined.");

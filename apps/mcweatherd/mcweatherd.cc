@@ -43,6 +43,7 @@
 #include <cstdlib>
 
 #include "DwmDaemonUtils.hh"
+#include "DwmSignal.hh"
 #include "DwmSysLogger.hh"
 #include "DwmMcweatherCurrentConditions.hh"
 #include "DwmMcweatherServer.hh"
@@ -51,7 +52,9 @@
 using namespace std;
 using namespace Dwm;
 
-static string  g_pidFile;
+static string            g_pidFile;
+static atomic<bool>      g_gotSigTerm = false;
+boost::asio::io_context  g_serverContext;
 
 //----------------------------------------------------------------------------
 //!  
@@ -79,6 +82,33 @@ static void RemovePID()
 {
   if (! g_pidFile.empty()) {
     std::remove(g_pidFile.c_str());
+  }
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static void SigTermHandler(int sigNum)
+{
+  if (SIGTERM == sigNum) {
+    g_gotSigTerm = true;
+    g_serverContext.stop();
+    Syslog(LOG_INFO, "SigTermHandler got SIGTERM");
+  }
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static void BoostSignalHandler(const boost::system::error_code & ec,
+                               int sigNum)
+{
+  if (SIGTERM == sigNum) {
+    g_gotSigTerm = true;
+    g_serverContext.stop();
+    Syslog(LOG_INFO, "BoostSignalHandler got SIGTERM");
   }
   return;
 }
@@ -127,13 +157,24 @@ int main(int argc, char *argv[])
 
     Mcweather::WeatherFetcher  fetcher(config);
     if (fetcher.Start()) {
+      Signal sigHup(SIGTERM);
+      sigHup.PushHandler(SigTermHandler);
       SavePID(pidFile);
-      atexit(RemovePID);
-      boost::asio::io_context context;
-      Mcweather::Server  server(context.get_executor(), config);
-      context.run();
+      //      atexit(RemovePID);
+      boost::asio::signal_set boostSignals(g_serverContext, SIGTERM);
+      boostSignals.async_wait(BoostSignalHandler);
+      Mcweather::Server  server(g_serverContext.get_executor(), config);
+      g_serverContext.run();
       for (;;) {
-        sleep(1);
+        if (g_gotSigTerm) {
+          server.Stop();
+          fetcher.Stop();
+          RemovePID();
+          break;
+        }
+        else {
+          this_thread::sleep_for(chrono::milliseconds(500));
+        }
       }
     }
     else {

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+case $1 in
+    configure)
+      systemctl daemon-reload
+      echo "systemd reloaded"
+    ;;
+    triggered)
+    ;;
+    abort-upgrade)
+    ;;
+    abort-remove)
+    ;;
+    abort-deconfigure)
+    ;;
+    abort-remove)
+    ;;
+esac
