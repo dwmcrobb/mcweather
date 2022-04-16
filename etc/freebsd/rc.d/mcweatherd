@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# PROVIDE: mcweatherd
+# REQUIRE: FILESYSTEMS disks mountd resolv
+
+. /etc/rc.subr
+
+name="mcweatherd"
+rcvar=mcweatherd_enable
+
+load_rc_config mcweatherd
+
+: ${mcweatherd_enable:="NO"}
+
+required_files="${mcweatherd_config:=/usr/local/etc/mcweatherd.cfg} /usr/local/etc/mcweatherd/id_ed25519 /usr/local/etc/mcweatherd/known_keys"
+
+pidfile=${mcweatherd_pidfile:="/var/run/mcweatherd.pid"}
+
+command="/usr/local/sbin/mcweatherd"
+command_args="-c ${mcweatherd_config} -p ${pidfile}"
+
+start_precmd=mcweatherd_precmd
+
+mcweatherd_precmd()
+{
+    export PATH="${PATH}:/usr/local/sbin"
+}
+
+run_rc_command "$1"

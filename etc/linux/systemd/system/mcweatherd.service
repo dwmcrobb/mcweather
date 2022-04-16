@@ -1,0 +1,17 @@
+[Unit]
+Description=mcweatherd
+DefaultDependencies=no
+After=rc-local.service
+
+[Service]
+ExecStart=/usr/local/sbin/mcweatherd -c /usr/local/etc/mcweatherd.cfg -p /run/mcweatherd.pid
+KillMode=process
+PIDFile=/run/mcweatherd.pid
+Restart=on-failure
+# StandardInput=tty
+# StandardOutput=tty
+Type=forking
+
+[Install]
+WantedBy=multi-user.target
+Alias=mcweatherd.service

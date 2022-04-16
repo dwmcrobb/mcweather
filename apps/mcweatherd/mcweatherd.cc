@@ -39,6 +39,9 @@
 //!  \brief weather cache server daemon
 //---------------------------------------------------------------------------
 
+#include <cstdio>
+#include <cstdlib>
+
 #include "DwmDaemonUtils.hh"
 #include "DwmSysLogger.hh"
 #include "DwmMcweatherCurrentConditions.hh"
@@ -48,20 +51,69 @@
 using namespace std;
 using namespace Dwm;
 
+static string  g_pidFile;
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static void SavePID(const string & pidFile)
+{
+#ifndef O_EXLOCK
+  #define O_EXLOCK 0
+#endif
+  g_pidFile = pidFile;
+  pid_t  pid = getpid();
+  string  &&pidstr = to_string(pid) + "\n";
+  int    fd = open(g_pidFile.c_str(), O_WRONLY|O_CREAT|O_TRUNC|O_EXLOCK, 0644);
+  if (fd >= 0) {
+    write(fd, pidstr.c_str(), pidstr.size());
+    close(fd);
+  }
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static void RemovePID()
+{
+  if (! g_pidFile.empty()) {
+    std::remove(g_pidFile.c_str());
+  }
+  return;
+}
+
+//----------------------------------------------------------------------------
+//!  
+//----------------------------------------------------------------------------
+static void Usage(const char *argv0)
+{
+  cerr << "Usage: " << argv0 << " [-c configFile] [-p pidFile]\n"
+       << "  Default configFile: /usr/local/etc/mcweatherd.cfg\n"
+       << "  Default pidFile: /var/run/mcweatherd.pid\n";
+  return;
+}
+
 //----------------------------------------------------------------------------
 //!  
 //----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
   string  configFile("/usr/local/etc/mcweatherd.cfg");
+  string  pidFile("/var/run/mcweatherd.pid");
   
   int  optChar;
-  while ((optChar = getopt(argc, argv, "c:")) != -1) {
+  while ((optChar = getopt(argc, argv, "c:p:")) != -1) {
     switch (optChar) {
       case 'c':
         configFile = optarg;
         break;
+      case 'p':
+        pidFile = optarg;
+        break;
       default:
+        Usage(argv[0]);
+        return 1;
         break;
     }
   }
@@ -75,6 +127,8 @@ int main(int argc, char *argv[])
 
     Mcweather::WeatherFetcher  fetcher(config);
     if (fetcher.Start()) {
+      SavePID(pidFile);
+      atexit(RemovePID);
       boost::asio::io_context context;
       Mcweather::Server  server(context.get_executor(), config);
       context.run();
@@ -82,6 +136,15 @@ int main(int argc, char *argv[])
         sleep(1);
       }
     }
+    else {
+      Syslog(LOG_ERR, "Failed to start fetcher!!!");
+      return 1;
+    }
   }
+  else {
+    cerr << "failed to parse configuration in '" << configFile << "'\n";
+    return 1;
+  }
+  
   return 0;
 }
