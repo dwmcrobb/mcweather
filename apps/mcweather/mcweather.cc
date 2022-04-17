@@ -49,6 +49,7 @@
 #include "DwmTerminalTricks.hh"
 #include "DwmCredencePeer.hh"
 #include "DwmMcweatherCache.hh"
+#include "DwmMcweatherVersion.hh"
 #include "DwmMcweatherWeatherdRequest.hh"
 
 // #include "DwmMcweatherCurrentConditions.hh"
@@ -57,12 +58,13 @@
 using namespace std;
 using namespace Dwm;
 
-typedef   Dwm::Arguments<Dwm::Argument<'s',string,false>,
+typedef   Dwm::Arguments<Dwm::Argument<'s',string,true>,
                          Dwm::Argument<'o',bool>,
                          Dwm::Argument<'c',bool>,
                          Dwm::Argument<'d',bool>,
                          Dwm::Argument<'h',bool>,
-                         Dwm::Argument<'r',bool>>  MyArgType;
+                         Dwm::Argument<'r',bool>,
+                         Dwm::Argument<'v',bool,true>>  MyArgType;
 
 //----------------------------------------------------------------------------
 //!  
@@ -76,6 +78,8 @@ static void InitArgs(MyArgType & args)
   args.SetHelp<'h'>("get hourly forecasts");
   args.SetHelp<'o'>("get observation stations");
   args.SetHelp<'r'>("get NWS radar URL");
+  args.SetHelp<'v'>("show version");
+  args.SetConflicts({ {'s','v'} });
   args.LoadFromEnvironment("MCWEATHER");
 }
 
@@ -398,7 +402,11 @@ int main(int argc, char *argv[])
   TerminalTricks  termTricks;
   Credence::Peer  peer;
 
-  if (peer.Connect(args.Get<'s'>(), 2124)) {
+  if (args.Get<'v'>()) {
+    std::cout << Mcweather::Version.Version() << '\n';
+    return 0;
+  }
+  else if (peer.Connect(args.Get<'s'>(), 2124)) {
     Credence::KeyStash   keyStash;
     Credence::KnownKeys  knownKeys;
     if (peer.Authenticate(keyStash, knownKeys)) {
