@@ -28,7 +28,7 @@ endif
 %.o: %.cc deps/%_deps
 	${CXX} ${CXXFLAGS} ${PTHREADCXXFLAGS} ${ALLINC} -c $<
 
-../../classes/lib/libMcweather.a::
+../../classes/lib/libDwmMcweather.a::
 	${MAKE} -C ../../classes/src
 
 tarprep: ${TARTARGETS}
