@@ -10,6 +10,7 @@ OBJFILESNP   = DwmMcweatherCache.o \
                DwmMcweatherPointInfo.o \
                DwmMcweatherServiceConfig.o \
                DwmMcweatherUtils.o \
+               DwmMcweatherVersion.o \
                DwmMcweatherWeatherConfig.o \
                DwmMcweatherWeatherFetcher.o
 OBJFILES     = $(OBJFILESNP:%=../obj/%)

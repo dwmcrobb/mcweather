@@ -82,7 +82,6 @@
 %type<floatVal>                Latitude Longitude
 %type<stringVal>               CacheDirectory
 %type<stringVal>               KeyDirectory
-%type<stringVal>               Uri
 %type<stringVecVal>            VectorOfString Stations
 %type<floatPairVal>            Location LocationData
 %type<weatherConfigVal>        WeatherData
@@ -335,11 +334,6 @@ TCP4Port: INTEGER
       return 1;
   }
   delete $1;
-};
-
-Uri: URI '=' STRING ';'
-{
-  $$ = $3;
 };
 
 Weather: WEATHER '{' WeatherData '}' ';'

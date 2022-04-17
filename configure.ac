@@ -99,5 +99,6 @@ AC_ARG_ENABLE([docs],[AS_HELP_STRING([--enable-docs],[build documentation])],
 AC_SUBST(BUILD_DOCS)
 
 AC_CONFIG_FILES([Makefile.vars packaging/debcontrol
-                 packaging/fbsd_manifest packaging/Mcweather.pc])
+                 packaging/fbsd_manifest packaging/Mcweather.pc
+		 classes/include/DwmMcweatherVersion.hh])
 AC_OUTPUT
