@@ -45,7 +45,6 @@
     { "service",            SERVICE        },
     { "stations",           STATIONS       },
     { "store",              STORE          },
-    { "status",             STATUS         },
     { "syslog",             SYSLOG         },
     { "weather",            WEATHER        }
   };
