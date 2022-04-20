@@ -1,6 +1,6 @@
 name: "Mcweather"
 version: "@TAGVERSION@"
-origin: "devel/Mcweather"
+origin: "astro/Mcweather"
 prefix: "@prefix@"
 www: "http://www.rfdm.com"
 maintainer: "dwmcrobb@me.com"
@@ -11,4 +11,9 @@ licenses: ["BSD"]
 categories: ["devel"]
 scripts: {
   post-install: "#!/bin/sh\nldconfig @prefix@/lib\n"
+}
+deps: {
+  "libDwm":{"origin":"devel/libDwm","version":"0.9.2"},
+  "libDwmCredence":{"origin":"devel/libDwmCredence","version":"0.1.0"},
+  "libDwmWebUtils":{"origin":"devel/libDwmWebUtils","version":"0.1.0"}
 }
