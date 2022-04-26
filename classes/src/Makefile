@@ -1,5 +1,8 @@
 include ../../Makefile.vars
 
+LTCOMPILE    = ${LIBTOOL} --mode=compile --tag=CXX ${CXX}
+LTLINK       = ${LIBTOOL} --mode=link --tag=CXX ${CXX}
+
 ALLINC       = -I../include ${DWMINCS}
 OBJFILESNP   = DwmMcweatherCache.o \
                DwmMcweatherConfigLex.o \
@@ -15,19 +18,20 @@ OBJFILESNP   = DwmMcweatherCache.o \
                DwmMcweatherWeatherFetcher.o
 OBJFILES     = $(OBJFILESNP:%=../obj/%)
 OBJDEPS      = $(OBJFILESNP:%.o=deps/%_deps)
+SHARED_OBJFILES = $(OBJFILES:%.o=%.lo)
+shlib_version = $(shell ../../getvers.sh -s)
 
-all: ../lib/libDwmMcweather.a
+all: ../lib/libDwmMcweather.la
 
-../lib/libDwmMcweather.a: ${OBJFILES}
-	ar rv $@ $^
-	-ranlib $@
+../lib/libDwmMcweather.la: ${SHARED_OBJFILES}
+	${LTLINK} -o $@ $^ -rpath ${INSTALLPREFIX}/lib -version-info ${shlib_version} ${DWMLIBS}
 
 #  dependency rule
 deps/%_deps: %.cc
 	@echo "making dependencies for $<"
 	@set -e; \
 	${CXX} -MM ${CXXFLAGS} ${PTHREADCXXFLAGS} ${ALLINC} -c $< | \
-	 sed 's/\($*\)\.o[ :]*/\1.o $(@D)\/$(@F) : /g' > $@ ; [ -s $@ ] || \
+	 sed 's/\($*\)\.o[ :]*/\1.lo $(@D)\/$(@F) : /g' > $@ ; [ -s $@ ] || \
 	 rm -f $@
 
 #  only include dependency makefiles if target is not 'clean' or 'distclean'
@@ -37,8 +41,8 @@ ifneq ($(MAKECMDGOALS),distclean)
 endif
 endif
 
-../obj/%.o: %.cc deps/%_deps
-	${CXX} ${CXXFLAGS} ${PTHREADCXXFLAGS} ${ALLINC} -c $< -o $@
+../obj/%.lo: %.cc deps/%_deps
+	${LTCOMPILE} ${CXXFLAGS} ${PTHREADCXXFLAGS} ${ALLINC} -c $< -o $@
 
 DwmMcweatherConfigParse.hh: DwmMcweatherConfigParse.cc
 
@@ -48,17 +52,17 @@ DwmMcweatherConfigParse.cc: DwmMcweatherConfigParse.y
 DwmMcweatherConfigLex.cc: DwmMcweatherConfigLex.lex DwmMcweatherConfigParse.hh
 	flex -o$@ $<
 
-tarprep: ${TARDIR}/lib/libDwmMcweather.a
+tarprep: ${TARDIR}/lib/libDwmMcweather.la
 
-${TARDIR}/lib/libDwmMcweather.a: ../lib/libDwmMcweather.a
-	../../install-sh -c $< $@
+${TARDIR}/lib/libDwmMcweather.la: ../lib/libDwmMcweather.la
+	${LIBTOOL} --mode=install ../../install-sh -c $< $@
 
 clean:: clean-tarprep
-	rm -f ${OBJFILES} DwmMcweatherConfigParse.cc DwmMcweatherConfigParse.hh
-	rm -f DwmMcweatherConfigLex.cc
+	${LIBTOOL} --mode=clean rm -f ../lib/libDwmMcweather.la ${OBJFILES}
+	${LIBTOOL} --mode=clean rm -f  DwmMcweatherConfigParse.cc DwmMcweatherConfigParse.hh DwmMcweatherConfigLex.cc
 
 distclean:: clean
 	rm -f ${OBJDEPS}
 
 clean-tarprep::
-	rm -f ${TARDIR}/lib/libDwmMcweather.a
+	${LIBTOOL} --mode=uninstall rm -f ${TARDIR}/lib/libDwmMcweather.la

@@ -1,5 +1,7 @@
 include ../../Makefile.vars
 
+LTLINK       = ${LIBTOOL} --mode=link --tag=CXX ${CXX}
+
 OBJFILES = TestConfig.o \
 	   TestPeriodForecast.o
 OBJDEPS	 = $(OBJFILES:%.o=deps/%_deps)
@@ -8,7 +10,7 @@ CXXFLAGS += -g
 LDFLAGS  += -g
 ALLINC   = ${DWMINCS}
 ALLINC   += ${NLOHMANNJSONINC} -I../include
-ALLLIBS  = -L../../classes/lib -lDwmMcweather ${DWMLIBS}
+ALLLIBS  = ${DWMLIBS}
 
 all: ${TESTS}
 
@@ -39,10 +41,10 @@ endif
 %.o: %.cc deps/%_deps
 	${CXX} ${CXXFLAGS} ${PTHREADCXXFLAGS} ${ALLINC} -c $<
 
-%: %.o ../lib/libDwmMcweather.a
-	${CXX} ${LDFLAGS} -o $@ $< ${ALLLIBS}
+%: %.o ../lib/libDwmMcweather.la
+	${LTLINK} ${LDFLAGS} -o $@ $^ ${ALLLIBS}
 
-../lib/libMcweather.a::
+../lib/libMcweather.la::
 	${MAKE} -C ../src
 
 clean:

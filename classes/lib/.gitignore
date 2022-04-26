@@ -1,1 +1,3 @@
+.libs/**
 libDwmMcweather.a
+libDwmMcweather.la

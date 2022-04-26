@@ -1,5 +1,7 @@
 include ../../Makefile.vars
 
+LTLINK       = ${LIBTOOL} --mode=link --tag=CXX ${CXX}
+
 OBJFILES = mcweatherd.o \
            DwmMcweatherResponder.o \
            DwmMcweatherServer.o
@@ -8,11 +10,11 @@ CXXFLAGS += -g
 LDFLAGS  += -g
 ALLINC   = ${DWMINCS}
 ALLINC   += ${NLOHMANNJSONINC} -I../../classes/include -I.
-ALLLIBS  = ../../classes/lib/libDwmMcweather.a ${DWMLIBS}
+ALLLIBS  = ${DWMLIBS}
 TARTARGETS  = ${TARDIR}/sbin/mcweatherd
 
-mcweatherd: ${OBJFILES} ../../classes/lib/libDwmMcweather.a
-	${CXX} -o $@ ${OBJFILES} ${ALLLIBS}
+mcweatherd: ${OBJFILES} ../../classes/lib/libDwmMcweather.la
+	${LTLINK} -o $@ $^ -rpath ${DWMDIR}/lib ${ALLLIBS}
 
 #  dependency rule
 deps/%_deps: %.cc 
@@ -30,16 +32,16 @@ endif
 %.o: %.cc deps/%_deps
 	${CXX} ${CXXFLAGS} ${PTHREADCXXFLAGS} ${ALLINC} -c $<
 
-../../classes/lib/libMcweather.a::
+../../classes/lib/libMcweather.la::
 	${MAKE} -C ../../classes/src
 
 tarprep: ${TARTARGETS}
 
 ${TARDIR}/sbin/mcweatherd: mcweatherd
-	../../install-sh -s -c -m 555 $< $@
+	${LIBTOOL} --mode=install ../../install-sh -s -c -m 555 $< $@
 
 clean:: clean-tarprep
-	rm -f mcweatherd ${OBJFILES}
+	${LIBTOOL} --mode=clean rm -f mcweatherd ${OBJFILES}
 
 clean-tarprep::
-	rm -f ${TARTARGETS}
+	${LIBTOOL} --mode=uninstall rm -f ${TARTARGETS}
