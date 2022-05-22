@@ -1,14 +1,14 @@
 include Makefile.vars
 
-all:: classes/lib/libDwmMcweather.a apps
+all:: classes/lib/libDwmMcweather.la apps
 
-classes/lib/libDwmMcweather.a::
+classes/lib/libDwmMcweather.la::
 	${MAKE} -C classes
 
 apps::
 	${MAKE} -C apps
 
-tarprep:: classes/lib/libDwmMcweather.a apps
+tarprep:: classes/lib/libDwmMcweather.la apps
 	${MAKE} -C classes $@
 	${MAKE} -C apps $@
 ifeq ("${BUILD_DOCS}", "yes")
