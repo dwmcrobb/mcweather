@@ -23,8 +23,9 @@ shlib_version = $(shell ../../getvers.sh -s)
 
 all: ../lib/libDwmMcweather.la
 
-../lib/libDwmMcweather.la: ${SHARED_OBJFILES}
-	${LTLINK} -o $@ $^ -rpath ${INSTALLPREFIX}/lib -version-info ${shlib_version} ${DWMLIBS}
+../lib/libDwmMcweather.la: ${SHARED_OBJFILES} ${OBJFILES}
+	${LTLINK} -o $@ ${SHARED_OBJFILES} -rpath ${INSTALLPREFIX}/lib \
+	  -version-info ${shlib_version} ${DWMLIBS}
 
 #  dependency rule
 deps/%_deps: %.cc
@@ -41,7 +42,7 @@ ifneq ($(MAKECMDGOALS),distclean)
 endif
 endif
 
-../obj/%.lo: %.cc deps/%_deps
+../obj/%.o ../obj/%.lo: %.cc deps/%_deps
 	${LTCOMPILE} ${CXXFLAGS} ${PTHREADCXXFLAGS} ${ALLINC} -c $< -o $@
 
 DwmMcweatherConfigParse.hh: DwmMcweatherConfigParse.cc

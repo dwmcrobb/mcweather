@@ -44,7 +44,7 @@ endif
 %: %.o ../lib/libDwmMcweather.la
 	${LTLINK} ${LDFLAGS} -o $@ $^ ${ALLLIBS}
 
-../lib/libMcweather.la::
+../lib/libDwmMcweather.la::
 	${MAKE} -C ../src
 
 clean:

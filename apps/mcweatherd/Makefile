@@ -32,7 +32,7 @@ endif
 %.o: %.cc deps/%_deps
 	${CXX} ${CXXFLAGS} ${PTHREADCXXFLAGS} ${ALLINC} -c $<
 
-../../classes/lib/libMcweather.la::
+../../classes/lib/libDwmMcweather.la::
 	${MAKE} -C ../../classes/src
 
 tarprep: ${TARTARGETS}

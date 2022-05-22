@@ -1,16 +1,18 @@
 include ../../Makefile.vars
 
+LTLINK       = ${LIBTOOL} --mode=link --tag=CXX ${CXX}
+
 OBJFILES = mcweathercgi.o
 OBJDEPS	 = $(OBJFILES:%.o=deps/%_deps)
 CXXFLAGS += -g
 LDFLAGS  += -Wl,-rpath ${DWMDIR}/lib
 ALLINC   = ${DWMINCS}
 ALLINC   += ${NLOHMANNJSONINC} -I../../classes/include -I.
-ALLLIBS  = ../../classes/lib/libDwmMcweather.a ${DWMLIBS}
+ALLLIBS  = ../../classes/lib/libDwmMcweather.la ${DWMLIBS}
 TARTARGETS  = ${TARDIR}/bin/mcweathercgi
 
-mcweathercgi: ${OBJFILES} ../../classes/lib/libDwmMcweather.a
-	${CXX} ${LDFLAGS} -o $@ ${OBJFILES} ${ALLLIBS}
+mcweathercgi: ${OBJFILES} ../../classes/lib/libDwmMcweather.la
+	${LTLINK} ${LDFLAGS} -o $@ ${OBJFILES} ${ALLLIBS}
 
 #  dependency rule
 deps/%_deps: %.cc 
@@ -28,7 +30,7 @@ endif
 %.o: %.cc deps/%_deps
 	${CXX} ${CXXFLAGS} ${PTHREADCXXFLAGS} ${ALLINC} -c $<
 
-../../classes/lib/libMcweather.a::
+../../classes/lib/libDwmMcweather.la::
 	${MAKE} -C ../../classes/src
 
 tarprep: ${TARTARGETS}
