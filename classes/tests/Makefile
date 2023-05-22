@@ -49,3 +49,6 @@ endif
 
 clean:
 	${LIBTOOL} --mode=clean rm -f ${TESTS} ${OBJFILES}
+
+distclean: clean
+	rm -f #{OBJDEPS}

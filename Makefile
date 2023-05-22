@@ -11,9 +11,6 @@ apps::
 tarprep:: classes/lib/libDwmMcweather.la apps
 	${MAKE} -C classes $@
 	${MAKE} -C apps $@
-ifeq ("${BUILD_DOCS}", "yes")
-	${MAKE} -C doc $@
-endif
 	${MAKE} -C etc $@
 	${MAKE} -C packaging $@
 
@@ -40,7 +37,6 @@ clean::
 
 distclean:: clean
 	${MAKE} -C classes $@
-	${MAKE} -C doc $@
 	${MAKE} -C packaging $@
 	rm -Rf autom4te.cache staging
 	rm -f config.log config.status Makefile.vars
