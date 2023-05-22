@@ -1,0 +1,3 @@
+2023-05-21  dwm  <dwm@mcplex.net>
+
+	* Makefile, classes/tests/Makefile: Fix 'distclean' target.
