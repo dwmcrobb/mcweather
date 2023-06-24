@@ -1,3 +1,9 @@
+2023-06-24  dwm  <dwm@mcplex.net>
+
+	* tagged as Mcweather-0.1.6
+
+	* Update config.guess
+
 2023-05-21  dwm  <dwm@mcplex.net>
 
 	* Makefile, classes/tests/Makefile: Fix 'distclean' target.
