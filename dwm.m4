@@ -259,16 +259,16 @@ define(DWM_SET_PKGVARS,[
   AC_SUBST(TARDIR)
   AC_SUBST(TARDIR_RELATIVE)
   AC_MSG_RESULT([
-    OSNAME=\"${OSNAME}\"
-    OSVERSION=\"${OSVERSION}\"
-    OSARCH=\"${OSARCH}\"
-    TAGFULL=\"${TAGFULL}\"
-    TAGNAME=\"${TAGNAME}\"
-    TAGVERSION=\"${TAGVERSION}\"
-    PKG_SUBDIR=\"${PKG_SUBDIR}\"
-    TAR=\"${TAR}\"
-    TARDIR=\"${TARDIR}\"
-    TARDIR_RELATIVE=\"${TARDIR_RELATIVE}\"])
+    OSNAME="${OSNAME}"
+    OSVERSION="${OSVERSION}"
+    OSARCH="${OSARCH}"
+    TAGFULL="${TAGFULL}"
+    TAGNAME="${TAGNAME}"
+    TAGVERSION="${TAGVERSION}"
+    PKG_SUBDIR="${PKG_SUBDIR}"
+    TAR="${TAR}"
+    TARDIR="${TARDIR}"
+    TARDIR_RELATIVE="${TARDIR_RELATIVE}"])
 ])
 
 dnl #------------------------------------------------------------------------
@@ -323,7 +323,7 @@ define(DWM_SET_OMNIFLAGS,[
 
   AC_SUBST(OMNIFLAGS)
   AC_MSG_RESULT([
-    OMNIFLAGS=\"${OMNIFLAGS}\"])
+    OMNIFLAGS="${OMNIFLAGS}"])
 ])
 
 dnl #------------------------------------------------------------------------
@@ -356,6 +356,7 @@ define(DWM_SET_CXX_SHARED_FLAGS,[
   AC_SUBST(LD_SHARED_FLAGS)
   AC_SUBST(SHARED_LIB_EXT)
 ])
+
 
 dnl #------------------------------------------------------------------------
 dnl #  Sets flags needed for pthreads and threadsafe STL
@@ -420,8 +421,8 @@ define(DWM_SET_PTHREADFLAGS,[
   AC_SUBST(PTHREADCXXFLAGS)
   AC_SUBST(PTHREADLDFLAGS)
   AC_MSG_RESULT([
-    PTHREADCXXFLAGS=\"${PTHREADCXXFLAGS}\"
-    PTHREADLDFLAGS=\"${PTHREADLDFLAGS}\"])
+    PTHREADCXXFLAGS="${PTHREADCXXFLAGS}"
+    PTHREADLDFLAGS="${PTHREADLDFLAGS}"])
 ])
 
 define(DWM_CHECK_STRTOF,[
@@ -532,14 +533,11 @@ define(DWM_CHECK_CPLUSPLUS_0x,[
   	prev_CPPFLAGS="$CXXFLAGS"
 	CXXFLAGS="$CXXFLAGS -std=c++11"
 	AC_MSG_CHECKING([for C++0x features])
-	AC_TRY_COMPILE([#include <tuple>],
-		       [std::tuple<int,int> t;],
-		       [AC_MSG_RESULT(yes)
-		        AC_DEFINE(HAVE_CPP0X)],
-		       [AC_MSG_RESULT(no)
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <tuple>]], [[std::tuple<int,int> t;]])],[AC_MSG_RESULT(yes)
+		        AC_DEFINE(HAVE_CPP0X)],[AC_MSG_RESULT(no)
 	                AC_MSG_CHECKING([for C++ TR1 features])
 	        	CXXFLAGS="$prev_CPPFLAGS"
-	        	AC_TRY_COMPILE([#include <tr1/tuple>],
+	        	_au_m4_changequote([,])AC_TRY_COMPILE([#include <tr1/tuple>],
 			       	       [std::tr1::tuple<int,int> t;],
 			       	       [AC_MSG_RESULT(yes)
 			                AC_DEFINE(HAVE_TR1)],
@@ -549,14 +547,11 @@ define(DWM_CHECK_CPLUSPLUS_0x,[
 	prev_CPPFLAGS="$CXXFLAGS"
 	CXXFLAGS="$CXXFLAGS -std=gnu++0x"
 	AC_MSG_CHECKING([for C++0x features])
-	AC_TRY_COMPILE([#include <tuple>],
-	       	       [std::tuple<int,int> t;],
-	       	       [AC_MSG_RESULT(yes)
-	                AC_DEFINE(HAVE_CPP0X)],
-	       	       [AC_MSG_RESULT(no)
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <tuple>]], [[std::tuple<int,int> t;]])],[AC_MSG_RESULT(yes)
+	                AC_DEFINE(HAVE_CPP0X)],[AC_MSG_RESULT(no)
 	                AC_MSG_CHECKING([for C++ TR1 features])
 	        	CXXFLAGS="$prev_CPPFLAGS"
-	        	AC_TRY_COMPILE([#include <tr1/tuple>],
+	        	_au_m4_changequote([,])AC_TRY_COMPILE([#include <tr1/tuple>],
 			               [std::tr1::tuple<int,int> t;],
 			       	       [AC_MSG_RESULT(yes)
 			                AC_DEFINE(HAVE_TR1)],
@@ -576,14 +571,11 @@ define(DWM_CHECK_CPLUSPLUS_11,[
   AC_LANG_PUSH(C++)
   prev_CPPFLAGS="$CXXFLAGS"
   CXXFLAGS="$CXXFLAGS -std=c++11"
-  AC_TRY_COMPILE([
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
     #include <iostream>
-    #include <vector>],
-    [std::vector<int> vi = { 1, 2, 3, 4 };
-     for (auto i : vi) { std::cout << i << '\n'; }],
-    [AC_MSG_RESULT(yes)
-     AC_DEFINE(HAVE_CPP11)],
-    [AC_MSG_RESULT(no)
+    #include <vector>]], [[std::vector<int> vi = { 1, 2, 3, 4 };
+     for (auto i : vi) { std::cout << i << '\n'; }]])],[AC_MSG_RESULT(yes)
+     AC_DEFINE(HAVE_CPP11)],[AC_MSG_RESULT(no)
      echo C++11 is required\!\!
      exit 1])
   AC_LANG_POP()
@@ -595,14 +587,11 @@ define(DWM_CHECK_CPLUSPLUS_1Z,[
   AC_LANG_PUSH(C++)
   prev_CPPFLAGS="$CXXFLAGS"
   CXXFLAGS="$CXXFLAGS -std=c++1z"
-  AC_TRY_COMPILE([
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
     #include <shared_mutex>
-    #include <vector>],
-    [std::shared_mutex  mtx;
-     std::shared_lock<std::shared_mutex>  lock(mtx);],
-    [AC_MSG_RESULT(yes)
-     AC_DEFINE(HAVE_CPP1Z)],
-    [AC_MSG_RESULT(no)
+    #include <vector>]], [[std::shared_mutex  mtx;
+     std::shared_lock<std::shared_mutex>  lock(mtx);]])],[AC_MSG_RESULT(yes)
+     AC_DEFINE(HAVE_CPP1Z)],[AC_MSG_RESULT(no)
      CXXFLAGS="$prev_CPPFLAGS"
      DWM_CHECK_CPLUSPLUS_11])
   AC_LANG_POP()
@@ -614,17 +603,45 @@ define(DWM_CHECK_CPLUSPLUS_17,[
   AC_LANG_PUSH(C++)
   prev_CPPFLAGS="$CXXFLAGS"
   CXXFLAGS="$CXXFLAGS -std=c++17"
-  AC_TRY_COMPILE([
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
     #include <shared_mutex>
-    #include <vector>],
-    [std::shared_mutex  mtx;
-     std::shared_lock<std::shared_mutex>  lock(mtx);],
-    [AC_MSG_RESULT(yes)
+    #include <vector>]], [[std::shared_mutex  mtx;
+     std::shared_lock<std::shared_mutex>  lock(mtx);]])],[AC_MSG_RESULT(yes)
      AC_DEFINE(HAVE_CPP17)
-     LDFLAGS="$LDFLAGS -std=c++17"],
-    [AC_MSG_RESULT(no)
+     AC_DEFINE(HAVE_CPP11)
+     LDFLAGS="$LDFLAGS -std=c++17"],[AC_MSG_RESULT(no)
      CXXFLAGS="$prev_CPPFLAGS"
      DWM_CHECK_CPLUSPLUS_1Z()])
+  AC_LANG_POP()
+])
+
+dnl #-------------------------------------------------------------------------
+define(DWM_CHECK_CPLUSPLUS_20,[
+  AC_MSG_CHECKING([for C++20])
+  AC_LANG_PUSH(C++)
+  AX_CHECK_COMPILE_FLAG([-std=c++20], [
+    AC_DEFINE(HAVE_CPP20)
+    AC_DEFINE(HAVE_CPP17)
+    AC_DEFINE(HAVE_CPP11)
+    CXXFLAGS="$CXXFLAGS -std=c++20"
+    LDFLAGS="$LDFLAGS -std=c++20"
+  ], [
+    DWM_CHECK_CPLUSPLUS_17()
+  ])
+  AC_LANG_POP()
+])
+
+dnl #-------------------------------------------------------------------------
+define(DWM_CHECK_CPLUSPLUS_23,[
+  AC_MSG_CHECKING([for C++23])
+  AC_LANG_PUSH(C++)
+  AX_CHECK_COMPILE_FLAG([-std=c++23], [
+    AC_DEFINE(HAVE_CPP23)
+    CXXFLAGS="$CXXFLAGS -std=c++23"
+    LDFLAGS="$LDFLAGS -std=c++23"
+  ], [
+    DWM_CHECK_CPLUSPLUS_20()
+  ])
   AC_LANG_POP()
 ])
 
@@ -634,13 +651,10 @@ define(DWM_CHECK_SQLITE3,[
   AC_LANG_PUSH(C++)
   prev_CPPFLAGS="$CXXFLAGS"
   CXXFLAGS="$CXXFLAGS -I/usr/src/contrib/sqlite3"
-  AC_TRY_COMPILE([
-    #include <sqlite3.h>],
-    [sqlite3  *ppdb;],
-    [AC_MSG_RESULT(yes)
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+    #include <sqlite3.h>]], [[sqlite3  *ppdb;]])],[AC_MSG_RESULT(yes)
      AC_DEFINE(HAVE_SQLITE3)
-     SQLITEDIR=/usr/src/contrib/sqlite3],
-    [AC_MSG_RESULT(no)
+     SQLITEDIR=/usr/src/contrib/sqlite3],[AC_MSG_RESULT(no)
      echo '/usr/src/contrib/sqlite3 is required (FreeBSD src)'
      exit 1])
   CXXFLAGS="$prev_CPPFLAGS"
@@ -791,11 +805,8 @@ define(DWM_CHECK_LIBSTDCPPFS,[
   prev_LIBS="${LIBS}"
   CXXFLAGS="$CXXFLAGS -std=c++17"
   LIBS="${LIBS} -lstdc++fs"
-  AC_TRY_LINK([#include <filesystem>],
-              [std::filesystem::remove("foo");],
-              [AC_MSG_RESULT(yes)
-               AC_SUBST(LIBSTDCPPFS,[-lstdc++fs])],
-              [AC_MSG_RESULT(no)
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <filesystem>]], [[std::filesystem::remove("foo");]])],[AC_MSG_RESULT(yes)
+               AC_SUBST(LIBSTDCPPFS,[-lstdc++fs])],[AC_MSG_RESULT(no)
                LIBS="$prev_LIBS"])
   CXXFLAGS="$prev_CPPFLAGS"
   AC_LANG_POP()
@@ -808,15 +819,15 @@ define(DWM_CHECK_LIBDWM,[
   prev_CXXFLAGS="$CXXFLAGS"
   libDwmCxxFlags=`pkg-config --cflags libDwm 2>/dev/null`
   CXXFLAGS="${CXXFLAGS} ${libDwmCxxFlags}"
-  AC_TRY_COMPILE([
-    #include "DwmSysLogger.hh"
-    ],
-    [Dwm::SysLogger::ShowFileLocation(true);],
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+    #include "DwmSysLogger.hh"]],
+    [[Dwm::SysLogger::ShowFileLocation(true);]])],
     [AC_MSG_RESULT(found)],
     [AC_MSG_RESULT(not found)
       echo libDwm is required \!\!
       exit 1])
   CXXFLAGS="${prev_CXXFLAGS}"
+  AC_LANG_POP()
 ])
 
 dnl #------------------------------------------------------------------------
@@ -826,15 +837,15 @@ define(DWM_CHECK_LIBDWMCREDENCE,[
   prev_CXXFLAGS="$CXXFLAGS"
   libDwmCredenceCxxFlags=`pkg-config --cflags libDwmCredence 2>/dev/null`
   CXXFLAGS="${CXXFLAGS} ${libDwmCredenceCxxFlags}"
-  AC_TRY_COMPILE([
-    #include "DwmCredencePeer.hh"
-    ],
-    [Dwm::Credence::Peer peer;],
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+      #include "DwmCredencePeer.hh"]],
+    [[Dwm::Credence::Peer peer;]])],
     [AC_MSG_RESULT(found)],
     [AC_MSG_RESULT(not found)
       echo libDwmCredence is required \!\!
       exit 1])
   CXXFLAGS="${prev_CXXFLAGS}"
+  AC_LANG_POP()
 ])
 
 dnl #------------------------------------------------------------------------
@@ -844,67 +855,66 @@ define(DWM_CHECK_LIBDWMWEBUTILS,[
   prev_CXXFLAGS="$CXXFLAGS"
   libDwmWebUtilsCxxFlags=`pkg-config --cflags libDwmWebUtils 2>/dev/null`
   CXXFLAGS="${CXXFLAGS} ${libDwmWebUtilsCxxFlags}"
-  AC_TRY_COMPILE([
-    #include "DwmWebUtilsUrl.hh"
-    ],
-    [Dwm::WebUtils::Url  url;],
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+      #include "DwmWebUtilsUrl.hh"]],
+    [[Dwm::WebUtils::Url  url;]])],
     [AC_MSG_RESULT(found)],
     [AC_MSG_RESULT(not found)
       echo libDwmWebUtils is required \!\!
       exit 1])
   CXXFLAGS="${prev_CXXFLAGS}"
+  AC_LANG_POP()
+])
+
+dnl #------------------------------------------------------------------------
+define(DWM_COMPILE_BOOSTASIO,[
+  AC_LANG_PUSH(C++)
+  prev_CPPFLAGS="$CXXFLAGS"
+  if [[ -n "$1" ]]; then
+    CXXFLAGS="$CXXFLAGS -I[$1]/include"
+  fi
+  AC_COMPILE_IFELSE(
+    [AC_LANG_PROGRAM(
+      [[#include <boost/asio.hpp>]],
+      [[boost::asio::ip::tcp::iostream  tcpStream;]])
+    ],
+    [BOOSTDIR="$1"],
+    [BOOSTDIR="none"
+     CXXFLAGS="$prev_CPPFLAGS"]
+  )
+  AC_LANG_POP()
 ])
 
 dnl #------------------------------------------------------------------------
 define(DWM_CHECK_BOOSTASIO,[
   AC_MSG_CHECKING([for Boost asio])
-  AC_LANG_PUSH(C++)
-  prev_CPPFLAGS="$CXXFLAGS"
-  AC_TRY_COMPILE([
-    #include <boost/asio.hpp>
-    ],
-    [boost::asio::ip::tcp::iostream  tcpStream;],
-    [AC_MSG_RESULT(found)
-     AC_DEFINE(HAVE_BOOSTASIO)
-     BOOSTDIR=""
-     BOOSTINC=""
-     BOOSTLIBS="-lboost_iostreams -lboost_system"],
-    [CXXFLAGS="$CXXFLAGS -I/usr/local/include"
-     AC_TRY_COMPILE([
-       #include <boost/asio.hpp>
-       ],
-       [boost::asio::ip::tcp::iostream  tcpStream;],
-       [AC_MSG_RESULT(/usr/local)
-        AC_DEFINE(HAVE_BOOSTASIO)
-        BOOSTDIR=/usr/local
-	BOOSTINC=-I/usr/local/include
-	BOOSTLIBS="-L/usr/local/lib -lboost_iostreams -lboost_system"],
-       [CXXFLAGS="$prev_CPPFLAGS"
-        CXXFLAGS="$CXXFLAGS -I/opt/local/include"
-        AC_TRY_COMPILE([
-          #include <boost/asio.hpp>
-          ],
-          [boost::asio::ip::tcp::iostream tcpStream;],
-          [AC_MSG_RESULT(/opt/local)
-           AC_DEFINE(HAVE_BOOSTASIO)
-	   BOOSTDIR=/opt/local
-	   BOOSTINC=-I/opt/local/include
-	   BOOSTLIBS="-L/opt/local/lib -lboost_iostreams -lboost_system"],
-          [AC_MSG_RESULT(no)
-            echo Boost asio is required\!\!
-            exit 1])
-       ])
-    ]
-  )
-  CXXFLAGS="$prev_CPPFLAGS"
-  AC_LANG_POP()
-  if [[ -f ${BOOSTDIR}/lib/libboost_system-mt.dylib ]]; then
-    BOOSTLIBS="-L${BOOSTDIR}/lib -lboost_iostreams-mt -lboost_system-mt"
+  for boost_dir in "" "/usr/local" "/opt/local" "/opt/local/libexec/boost/1.81"; do
+    DWM_COMPILE_BOOSTASIO([${boost_dir}])
+    if [[ "${BOOSTDIR}" != "none" ]]; then
+      break
+    fi
+  done
+  if [[ "${BOOSTDIR}" != "none" ]]; then
+    AC_MSG_RESULT([found ${BOOSTDIR}])
+    AC_DEFINE(HAVE_BOOSTASIO)
+    if [[ -n "${BOOSTDIR}" ]]; then
+      BOOSTINC=-I${BOOSTDIR}/include
+      BOOSTLIBS="-L${BOOSTDIR}/lib"
+    fi
+    if [[ -f ${BOOSTDIR}/lib/libboost_system-mt.dylib ]]; then
+      BOOSTLIBS="${BOOSTLIBS} -lboost_iostreams-mt -lboost_system-mt"
+      BOOSTLIBTAG="-mt"
+    else
+      BOOSTLIBS="${BOOSTLIBS} -lboost_iostreams -lboost_system"
+    fi
+    AC_SUBST(BOOSTDIR)
+    AC_SUBST(BOOSTINC)
+    AC_SUBST(BOOSTLIBS)
+    AC_SUBST(BOOSTLIBTAG)
+  else
+    echo Boost asio is required\!\!
+    exit 1
   fi
-  AC_SUBST(BOOSTDIR)
-  AC_SUBST(BOOSTINC)
-  AC_SUBST(BOOSTLIBS)
-  AC_SUBST(BOOSTLIBTAG)
 ])
 
 dnl #-------------------------------------------------------------------------

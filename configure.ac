@@ -3,7 +3,7 @@ dnl AC_CONFIG_HEADER([classes/include/DwmPortability.hh])
 
 AC_PROG_CC
 AC_PROG_CXX
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_TARGET
 
 dnl  ###  Read some generally useful macros.
 builtin(include, ./dwm.m4)  dnl
