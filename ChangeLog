@@ -1,7 +1,13 @@
+2023-12-19  Daniel W. McRobb  <dwm@www.mcplex.net>
+
+	* tagged as Mcweather-0.1.9
+
+	* configure, configure.ac, ax_check_compile_flag.m4: Use C++20.
+
 2023-10-27  Daniel McRobb  <dwm@spark.mcplex.net>
 
 	* tagged as Mcweather-0.1.8
-	
+
 	* Makefile: use correct identifier when building package on macOS:
 	net.mcplex.Mcweather
 
