@@ -62,6 +62,10 @@ DWM_CHECK_LIBDWM
 DWM_CHECK_LIBDWMCREDENCE
 DWM_CHECK_LIBDWMWEBUTILS
 
+DWM_REQUIRES_DWMPKG(libDwm,0.9.22)
+DWM_REQUIRES_DWMPKG(libDwmCredence,0.1.25)
+DWM_REQUIRES_DWMPKG(libDwmWebUtils,0.1.23)
+
 DWMDIR=`pkg-config --variable=prefix libDwm`
 DWMINCS=`pkg-config --cflags-only-I libDwmWebUtils libDwmCredence libDwm`
 DWMLIBS=`pkg-config --libs libDwmWebUtils libDwmCredence libDwm`

@@ -1,3 +1,10 @@
+2023-12-29  Daniel McRobb  <dwm@spark.mcplex.net>
+
+	* tagged as Mcweather-0.1.10
+
+	* configure, configure.ac, dwm.m4: Add and use DWM_REQUIRES_DWMPKG
+	macro.
+
 2023-12-19  Daniel W. McRobb  <dwm@www.mcplex.net>
 
 	* tagged as Mcweather-0.1.9
