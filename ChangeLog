@@ -1,3 +1,8 @@
+2023-12-29  Daniel W. McRobb  <dwm@kiva.mcplex.net>
+
+	* configure, configure.ac: I no longer need -DWM_CHECK_LIBDWM,
+	DWM_CHECK_LIBDWMCREDENCE or DWM_CHECK_LIBDWMWEBUTILS.
+
 2023-12-29  Daniel McRobb  <dwm@spark.mcplex.net>
 
 	* tagged as Mcweather-0.1.10
