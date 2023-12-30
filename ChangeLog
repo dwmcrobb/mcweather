@@ -1,3 +1,7 @@
+2023-12-29  Daniel McRobb  <dwm@thrip.mcplex.net>
+
+	* Makefile: make 'apps' depend on classes/lib/libDwmMcweather.la
+
 2023-12-29  Daniel W. McRobb  <dwm@kiva.mcplex.net>
 
 	* configure, configure.ac: I no longer need -DWM_CHECK_LIBDWM,
