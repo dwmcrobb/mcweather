@@ -1,7 +1,9 @@
 2023-12-30  Daniel McRobb  <dwm@spark.mcplex.net>
 
+	* tagged as Mcweather-0.1.12
+
 	* configure, configure.ac, dwm.m4: Minor cleanups.
-	
+
 	* mkarchive.sh: script to create a tarball of source.
 
 2023-12-29  Daniel W. McRobb  <dwm@nomnom.mcplex.net>
