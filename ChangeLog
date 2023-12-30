@@ -1,4 +1,8 @@
-2023-12-29  Daniel McRobb  <dwm@thrip.mcplex.net>
+2023-12-29  Daniel W. McRobb  <dwm@nomnom.mcplex.net>
+
+	* tagged as Mcweather-0.1.11
+
+2023-12-29  Daniel W. McRobb  <dwm@thrip.mcplex.net>
 
 	* Makefile: make 'apps' depend on classes/lib/libDwmMcweather.la
 
@@ -7,7 +11,7 @@
 	* configure, configure.ac: I no longer need -DWM_CHECK_LIBDWM,
 	DWM_CHECK_LIBDWMCREDENCE or DWM_CHECK_LIBDWMWEBUTILS.
 
-2023-12-29  Daniel McRobb  <dwm@spark.mcplex.net>
+2023-12-29  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
 	* tagged as Mcweather-0.1.10
 
@@ -20,7 +24,7 @@
 
 	* configure, configure.ac, ax_check_compile_flag.m4: Use C++20.
 
-2023-10-27  Daniel McRobb  <dwm@spark.mcplex.net>
+2023-10-27  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
 	* tagged as Mcweather-0.1.8
 
