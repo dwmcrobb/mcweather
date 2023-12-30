@@ -5,7 +5,7 @@ all:: classes/lib/libDwmMcweather.la apps
 classes/lib/libDwmMcweather.la::
 	${MAKE} -C classes
 
-apps::
+apps:: classes/lib/libDwmMcweather.la
 	${MAKE} -C apps
 
 tarprep:: classes/lib/libDwmMcweather.la apps
