@@ -1,5 +1,9 @@
 2023-12-30  Daniel McRobb  <dwm@thrip.mcplex.net>
 
+	* tagged as Mcweather-0.1.14
+
+	* packaging/Mcweather.pc.in: Oops, fix pasto.
+
 	* tagged as Mcweather-0.1.13
 
 	* packaging/Mcweather.pc.in: Oops, we need to add our library to
