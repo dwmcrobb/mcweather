@@ -30,3 +30,5 @@ case "$1" in
     #       Before the package is replaced due to conflict.
     ;;
 esac
+
+exit 0

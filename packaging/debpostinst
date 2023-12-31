@@ -16,3 +16,5 @@ case $1 in
     abort-remove)
     ;;
 esac
+
+exit 0
