@@ -1,5 +1,9 @@
 2023-12-31  dwm  <dwm@nomnom.mcplex.net>
 
+	* tagged as Mcweather-0.1.16
+
+	* packaging/debpostrm: Fix typo.
+
 	* tagged as Mcweather-0.1.15
 
 	* packaging/debpostinst, packaging/debpostrm, packaging/debprerm:
