@@ -1,5 +1,7 @@
 2024-05-31  Daniel McRobb  <dwm@thrip.mcplex.net>
 
+	* tagged as Mcweather-0.1.17
+
 	* classes/tests/Makefile: Don't include dependencies for 'distclean'
 	target.
 
