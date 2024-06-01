@@ -36,6 +36,7 @@ clean::
 	${MAKE} -C packaging $@
 
 distclean:: clean
+	${MAKE} -C apps $@
 	${MAKE} -C classes $@
 	${MAKE} -C packaging $@
 	rm -Rf autom4te.cache staging

@@ -1,3 +1,8 @@
+2024-06-01  Daniel W. McRobb  <dwm@kiva.mcplex.net>
+
+	* Makefile, apps/mcweather/Makefile, apps/mcweatherd/Makefile,
+	classes/tests/Makefile: Fix up 'distclean' target.
+
 2024-05-31  Daniel McRobb  <dwm@thrip.mcplex.net>
 
 	* tagged as Mcweather-0.1.17
