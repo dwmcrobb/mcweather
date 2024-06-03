@@ -1,3 +1,11 @@
+2024-06-03  Daniel W. McRobb  <dwm@kiva.mcplex.net>
+
+	* tagged as Mcweather-0.1.19
+
+	* classes/src/DwmMcweatherCurrentConditions.cc:
+	classes/src/DwmMcweatherPeriodForecast.cc: Use ReadV/WriteV to
+	simplify some I/O.
+
 2024-06-01  Daniel W. McRobb  <dwm@kiva.mcplex.net>
 
 	* tagged as Mcweather-0.1.18

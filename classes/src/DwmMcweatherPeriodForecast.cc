@@ -209,27 +209,12 @@ namespace Dwm {
     std::istream & PeriodForecast::Read(std::istream & is)
     {
       if (is) {
-        int64_t  t;
-        if (StreamIO::Read(is, t)) {
-          _startTime = chrono::system_clock::from_time_t(t);
-          if (StreamIO::Read(is, t)) {
-            _endTime = chrono::system_clock::from_time_t(t);
-            if (StreamIO::Read(is, _name)) {
-              if (StreamIO::Read(is, _isDayTime)) {
-                if (StreamIO::Read(is, _temperature)) {
-                  if (StreamIO::Read(is, _temperatureUnit)) {
-                    if (StreamIO::Read(is, _windSpeed)) {
-                      if (StreamIO::Read(is, _windDirection)) {
-                        if (StreamIO::Read(is, _shortForecast)) {
-                          StreamIO::Read(is, _detailedForecast);
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+        int64_t  t1, t2;
+        if (StreamIO::ReadV(is, t1, t2, _name, _isDayTime, _temperature,
+                            _temperatureUnit, _windSpeed, _windDirection,
+                            _shortForecast, _detailedForecast)) {
+          _startTime = chrono::system_clock::from_time_t(t1);
+          _endTime = chrono::system_clock::from_time_t(t2);
         }
       }
       return is;
@@ -241,27 +226,11 @@ namespace Dwm {
     std::ostream & PeriodForecast::Write(std::ostream & os) const
     {
       if (os) {
-        int64_t  t = chrono::system_clock::to_time_t(_startTime);
-        if (StreamIO::Write(os, t)) {
-          t = chrono::system_clock::to_time_t(_endTime);
-          if (StreamIO::Write(os, t)) {
-            if (StreamIO::Write(os, _name)) {
-              if (StreamIO::Write(os, _isDayTime)) {
-                if (StreamIO::Write(os, _temperature)) {
-                  if (StreamIO::Write(os, _temperatureUnit)) {
-                    if (StreamIO::Write(os, _windSpeed)) {
-                      if (StreamIO::Write(os, _windDirection)) {
-                        if (StreamIO::Write(os, _shortForecast)) {
-                          StreamIO::Write(os, _detailedForecast);
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+        int64_t  t1 = chrono::system_clock::to_time_t(_startTime);
+        int64_t  t2 = chrono::system_clock::to_time_t(_endTime);
+        StreamIO::WriteV(os, t1, t2, _name, _isDayTime, _temperature,
+                         _temperatureUnit, _windSpeed, _windDirection,
+                         _shortForecast, _detailedForecast);
       }
       return os;
     }

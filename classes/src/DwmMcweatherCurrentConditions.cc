@@ -267,11 +267,7 @@ namespace Dwm {
     std::istream & CurrentCondition::Read(std::istream & is)
     {
       if (is) {
-        if (StreamIO::Read(is, _value)) {
-          if (StreamIO::Read(is, _unitCode)) {
-            StreamIO::Read(is, _qualityControl);
-          }
-        }
+        StreamIO::ReadV(is, _value, _unitCode, _qualityControl);
       }
       return is;
     }
@@ -282,11 +278,7 @@ namespace Dwm {
     std::ostream & CurrentCondition::Write(std::ostream & os) const
     {
       if (os) {
-        if (StreamIO::Write(os, _value)) {
-          if (StreamIO::Write(os, _unitCode)) {
-            StreamIO::Write(os, _qualityControl);
-          }
-        }
+        StreamIO::WriteV(os, _value, _unitCode, _qualityControl);
       }
       return os;
     }
@@ -470,23 +462,9 @@ namespace Dwm {
     std::istream & CurrentConditions::Read(std::istream & is)
     {
       if (is) {
-        if (StreamIO::Read(is, _station)) {
-          if (StreamIO::Read(is, _timestamp)) {
-            if (StreamIO::Read(is, _temperature)) {
-              if (StreamIO::Read(is, _relativeHumidity)) {
-                if (StreamIO::Read(is, _barometricPressure)) {
-                  if (StreamIO::Read(is, _dewpoint)) {
-                    if (StreamIO::Read(is, _windSpeed)) {
-                      if (StreamIO::Read(is, _windChill)) {
-                        StreamIO::Read(is, _heatIndex);
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+        StreamIO::ReadV(is, _station, _timestamp, _temperature,
+                        _relativeHumidity, _barometricPressure, _dewpoint,
+                        _windSpeed, _windChill, _heatIndex);
       }
       return is;
     }
