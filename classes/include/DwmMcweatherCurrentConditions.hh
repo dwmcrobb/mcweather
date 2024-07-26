@@ -1,7 +1,7 @@
 //===========================================================================
 // @(#) $DwmPath$
 //===========================================================================
-//  Copyright (c) Daniel W. McRobb 2020, 2022
+//  Copyright (c) Daniel W. McRobb 2020, 2022, 2024
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -53,10 +53,9 @@ namespace Dwm {
   namespace Mcweather {
 
     //------------------------------------------------------------------------
-    //!  
+    //!  Encapsulate a single weather condition.
     //------------------------------------------------------------------------
     class CurrentCondition
-      : public StreamIOCapable
     {
     public:
       CurrentCondition();
@@ -66,8 +65,8 @@ namespace Dwm {
       const std::string & UnitCode() const;
       const std::string & UnitCode(const std::string & unitCode);
       const std::string & QualityControl() const;
-      std::istream & Read(std::istream & is) override;
-      std::ostream & Write(std::ostream & os) const override;
+      std::istream & Read(std::istream & is);
+      std::ostream & Write(std::ostream & os) const;
 
       bool operator == (const CurrentCondition & cc) const;
       bool operator != (const CurrentCondition & cc) const;
@@ -79,29 +78,81 @@ namespace Dwm {
     };
       
     //------------------------------------------------------------------------
-    //!  
+    //!  Encapsulate the current weather conditions.
     //------------------------------------------------------------------------
     class CurrentConditions
-      : public StreamIOCapable
     {
     public:
+      //----------------------------------------------------------------------
+      //!  Default constructor
+      //----------------------------------------------------------------------
       CurrentConditions() = default;
       
+      //----------------------------------------------------------------------
+      //!  Popuate the current conditions from the given @c json.  Returns
+      //!  true on success, false on failure.
+      //----------------------------------------------------------------------
       bool FromJson(const nlohmann::json & json);
       
+      //----------------------------------------------------------------------
+      //!  Returns the weather station.
+      //----------------------------------------------------------------------
       const std::string & Station() const;
+      
+      //----------------------------------------------------------------------
+      //!  Returns the timestamp.
+      //----------------------------------------------------------------------
       int64_t Timestamp() const;
+      
+      //----------------------------------------------------------------------
+      //!  Sets and returns the timestamp.
+      //----------------------------------------------------------------------
       int64_t Timestamp(int64_t ts);
+      
+      //----------------------------------------------------------------------
+      //!  Returns the current temperature (Fahrenheit).
+      //----------------------------------------------------------------------
       int Temperature() const;
+      
+      //----------------------------------------------------------------------
+      //!  Returns the current relative humidity.
+      //----------------------------------------------------------------------
       int RelativeHumidity() const;
+      
+      //----------------------------------------------------------------------
+      //!  Returns the current barometric pressure (Pascal).
+      //----------------------------------------------------------------------
       int BarometricPressure() const;
+      
+      //----------------------------------------------------------------------
+      //!  Returns the current dew point (Fahrenheit).
+      //----------------------------------------------------------------------
       int Dewpoint() const;
+      
+      //----------------------------------------------------------------------
+      //!  Returns the current wind speed (mph).
+      //----------------------------------------------------------------------
       int WindSpeed() const;
+      
+      //----------------------------------------------------------------------
+      //!  Returns the current wind chill (Fahrenheit).
+      //----------------------------------------------------------------------
       int WindChill() const;
+      
+      //----------------------------------------------------------------------
+      //!  Returns the current heat index.
+      //----------------------------------------------------------------------
       int HeatIndex() const;
 
-      std::istream & Read(std::istream & is) override;
-      std::ostream & Write(std::ostream & os) const override;
+      //----------------------------------------------------------------------
+      //!  Reads the conditions from the given istream @c is.  Returns @c is.
+      //----------------------------------------------------------------------
+      std::istream & Read(std::istream & is);
+      
+      //----------------------------------------------------------------------
+      //!  Writes the conditions to the given ostream @c os.  Returns @c os.
+      //----------------------------------------------------------------------
+      std::ostream & Write(std::ostream & os) const;
 
       bool operator == (const CurrentConditions & ccs) const;
       bool operator != (const CurrentConditions & ccs) const;
