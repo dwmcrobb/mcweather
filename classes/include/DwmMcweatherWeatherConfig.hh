@@ -1,7 +1,7 @@
 //===========================================================================
 // @(#) $DwmPath$
 //===========================================================================
-//  Copyright (c) Daniel W. McRobb 2020
+//  Copyright (c) Daniel W. McRobb 2020, 2024
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -50,17 +50,41 @@ namespace Dwm {
   namespace Mcweather {
 
     //------------------------------------------------------------------------
-    //!  
+    //!  Encapsulates the 'weather' stanza of the mcweather configuration.
+    //!  Latitude and longitude are required.  Stations may be used to
+    //!  override the desired weather stations.
     //------------------------------------------------------------------------
     class WeatherConfig
     {
     public:
+      //----------------------------------------------------------------------
+      //!  Returns the latitude.
+      //----------------------------------------------------------------------
       float Latitude() const;
+      
+      //----------------------------------------------------------------------
+      //!  Sets and returns the latitude.
+      //----------------------------------------------------------------------
       float Latitude(float latitude);
+      
+      //----------------------------------------------------------------------
+      //!  Returns the longitude.
+      //----------------------------------------------------------------------
       float Longitude() const;
+      
+      //----------------------------------------------------------------------
+      //!  Sets and returns the longitude.
+      //----------------------------------------------------------------------
       float Longitude(float longitude);
+      
+      //----------------------------------------------------------------------
+      //!  Returns a const reference to the stations.
+      //----------------------------------------------------------------------
       const std::vector<std::string> & Stations() const;
 
+      //----------------------------------------------------------------------
+      //!  Sets and returns the stations.
+      //----------------------------------------------------------------------
       const std::vector<std::string> &
       Stations(const std::vector<std::string> & stations);
       
