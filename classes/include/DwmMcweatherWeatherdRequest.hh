@@ -49,7 +49,7 @@ namespace Dwm {
   namespace Mcweather {
 
     //------------------------------------------------------------------------
-    //!  Requests that can be set to @c mcweatherd.
+    //!  Requests that can be sent to @c mcweatherd.
     //!
     //!  @c e_currentConditions requests a @c map<string,CurrentConditions> of
     //!  current weather conditions, where the map keys are observation
