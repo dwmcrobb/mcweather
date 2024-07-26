@@ -1,7 +1,7 @@
 //===========================================================================
 // @(#) $DwmPath$
 //===========================================================================
-//  Copyright (c) Daniel W. McRobb 2020
+//  Copyright (c) Daniel W. McRobb 2020, 2024
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -54,29 +54,90 @@ namespace Dwm {
   namespace Mcweather {
       
     //------------------------------------------------------------------------
-    //!  
+    //!  Encapsulates a single period forecast.
     //------------------------------------------------------------------------
     class PeriodForecast
-      : public StreamIOCapable
     {
     public:
+      //----------------------------------------------------------------------
+      //!  Default constructor
+      //----------------------------------------------------------------------
       PeriodForecast() = default;
+      
+      //----------------------------------------------------------------------
+      //!  Copy constructor
+      //----------------------------------------------------------------------
       PeriodForecast(const PeriodForecast &) = default;
+      
+      //----------------------------------------------------------------------
+      //!  Assignment operator
+      //----------------------------------------------------------------------
       PeriodForecast & operator = (const PeriodForecast &) = default;
+      
+      //----------------------------------------------------------------------
+      //!  Construct from the given json @c j.
+      //----------------------------------------------------------------------
       PeriodForecast(const nlohmann::json & j);
+      
+      //----------------------------------------------------------------------
+      //!  Returns the start time of the forecast.
+      //----------------------------------------------------------------------
       std::chrono::system_clock::time_point StartTime() const;
+      
+      //----------------------------------------------------------------------
+      //!  Returns the end time of the forecast.
+      //----------------------------------------------------------------------
       std::chrono::system_clock::time_point EndTime() const;
+      
+      //----------------------------------------------------------------------
+      //!  Returns the name of the forecast.
+      //----------------------------------------------------------------------
       std::string Name() const;
+      
+      //----------------------------------------------------------------------
+      //!  Returns true if the forecast period is during the daytime.
+      //----------------------------------------------------------------------
       bool IsDayTime() const;
+      
+      //----------------------------------------------------------------------
+      //!  Returns the forecasted temperature.
+      //----------------------------------------------------------------------
       int Temperature() const;
+      
+      //----------------------------------------------------------------------
+      //!  Returns the unit for the temperature ('C' or 'F').
+      //----------------------------------------------------------------------
       char TemperatureUnit() const;
+      
+      //----------------------------------------------------------------------
+      //!  Returns the wind speed.
+      //----------------------------------------------------------------------
       std::string WindSpeed() const;
+      
+      //----------------------------------------------------------------------
+      //!  Returns the wind direction.
+      //----------------------------------------------------------------------
       std::string WindDirection() const;
+      
+      //----------------------------------------------------------------------
+      //!  Returns the short version of the forecast.
+      //----------------------------------------------------------------------
       std::string ShortForecast() const;
+      
+      //----------------------------------------------------------------------
+      //!  Returns the detailed version of the forecast.
+      //----------------------------------------------------------------------
       std::string DetailedForecast() const;
 
-      std::istream & Read(std::istream & is) override;
-      std::ostream & Write(std::ostream & os) const override;
+      //----------------------------------------------------------------------
+      //!  Reads the forecast from the given istream @c is.  Returns @c is.
+      //----------------------------------------------------------------------
+      std::istream & Read(std::istream & is);
+      
+      //----------------------------------------------------------------------
+      //!  Writes the forecast to the given ostream @c os.  Returns @c os.
+      //----------------------------------------------------------------------
+      std::ostream & Write(std::ostream & os) const;
       
     private:
       std::chrono::system_clock::time_point  _startTime;
