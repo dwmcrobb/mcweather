@@ -1,7 +1,7 @@
 //===========================================================================
 // @(#) $DwmPath$
 //===========================================================================
-//  Copyright (c) Daniel W. McRobb 2020, 2022
+//  Copyright (c) Daniel W. McRobb 2020, 2022, 2024
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,8 @@ namespace Dwm {
   namespace Mcweather {
 
     //------------------------------------------------------------------------
+    //!  Encapsulates a cache to hold weather information.
+    //!
     //!  This needs refactoring.  It's coupled too tightly to WeatherFetcher
     //!  and Utils and does more than it should.
     //------------------------------------------------------------------------
