@@ -53,19 +53,56 @@ namespace Dwm {
   namespace Mcweather {
 
     //------------------------------------------------------------------------
-    //!  Encapsulate a single weather condition.
+    //!  Encapsulate a single weather condition that has units we might
+    //!  want to convert.  Used for temperature and wind speed, for example.
     //------------------------------------------------------------------------
     class CurrentCondition
     {
     public:
+      //----------------------------------------------------------------------
+      //!  Default constructor.
+      //----------------------------------------------------------------------
       CurrentCondition();
+      
+      //----------------------------------------------------------------------
+      //!  Populate from the given @c json.  Returns true on success, false
+      //!  on failure.
+      //----------------------------------------------------------------------
       bool FromJson(const nlohmann::json & json);
+      
+      //----------------------------------------------------------------------
+      //!  Returns the value.
+      //----------------------------------------------------------------------
       int Value() const;
+      
+      //----------------------------------------------------------------------
+      //!  Sets and returns the value.
+      //----------------------------------------------------------------------
       int Value(int value);
+      
+      //----------------------------------------------------------------------
+      //!  Returns the unit code.
+      //----------------------------------------------------------------------
       const std::string & UnitCode() const;
+      
+      //----------------------------------------------------------------------
+      //!  Sets and returns the unit code.
+      //----------------------------------------------------------------------
       const std::string & UnitCode(const std::string & unitCode);
+      
+      //----------------------------------------------------------------------
+      //!  Returns the quality control.
+      //----------------------------------------------------------------------
       const std::string & QualityControl() const;
+      
+      //----------------------------------------------------------------------
+      //!  Reads the condition from the given istream @c is.  Returns @c is.
+      //----------------------------------------------------------------------
       std::istream & Read(std::istream & is);
+      
+      //----------------------------------------------------------------------
+      //!  Writes the condition to the given ostream @c os.  Returns @c os.
+      //----------------------------------------------------------------------
       std::ostream & Write(std::ostream & os) const;
 
       bool operator == (const CurrentCondition & cc) const;
