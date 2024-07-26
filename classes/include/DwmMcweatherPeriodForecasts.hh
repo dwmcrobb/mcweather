@@ -1,7 +1,7 @@
 //===========================================================================
 // @(#) $DwmPath$
 //===========================================================================
-//  Copyright (c) Daniel W. McRobb 2022
+//  Copyright (c) Daniel W. McRobb 2022, 2024
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,6 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 
-#include "DwmStreamIOCapable.hh"
 #include "DwmMcweatherPeriodForecast.hh"
 
 namespace Dwm {
@@ -56,7 +55,6 @@ namespace Dwm {
     //!  Encapsulates a vector of PeriodForecast objects.
     //------------------------------------------------------------------------
     class PeriodForecasts
-      : public StreamIOCapable
     {
     public:
       //----------------------------------------------------------------------
@@ -97,13 +95,13 @@ namespace Dwm {
       //!  Reads the PeriodForecasts from the given istream @c is.  Returns
       //!  @c is.
       //----------------------------------------------------------------------
-      std::istream & Read(std::istream & is) override;
+      std::istream & Read(std::istream & is);
 
       //----------------------------------------------------------------------
       //!  Writes the PeriodForecasts to the given ostream @c os.  Returns
       //!  @c os.
       //----------------------------------------------------------------------
-      std::ostream & Write(std::ostream & os) const override;
+      std::ostream & Write(std::ostream & os) const;
 
     private:
       std::vector<PeriodForecast>  _forecasts;
