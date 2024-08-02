@@ -1,3 +1,18 @@
+2024-08-01  Daniel W. McRobb  <dwm@spark.mcplex.net>
+
+	* tagged as Mcweather-0.1.20
+
+2024-07-26  Daniel W. McRobb  <dwm@spark.mcplex.net>
+
+	* classes/include/DwmMcweatherPointInfo.hh
+	* classes/include/DwmMcweatherPeriodForecasts.hh
+	Don't need to inherit from StreamIOCapable.
+
+	* classes/include/DwmMcweatherPeriodForecast.hh: Added comments.
+	* classes/include/DwmMcweatherCurrentConditions.hh: Added comments.
+	* classes/include/DwmMcweatherConfig.hh: Added comments.
+	* classes/include/DwmMcweatherWeatherConfig.hh: Added comments.
+
 2024-06-03  Daniel W. McRobb  <dwm@kiva.mcplex.net>
 
 	* tagged as Mcweather-0.1.19
