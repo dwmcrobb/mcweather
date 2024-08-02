@@ -1,7 +1,7 @@
 //===========================================================================
 // @(#) $DwmPath$
 //===========================================================================
-//  Copyright (c) Daniel W. McRobb 2020, 2022
+//  Copyright (c) Daniel W. McRobb 2020, 2022, 2024
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,6 @@ namespace Dwm {
     //!  
     //------------------------------------------------------------------------
     class PointInfo
-      : public StreamIOCapable
     {
     public:
       PointInfo();
@@ -69,8 +68,8 @@ namespace Dwm {
       int GridY() const;
       const std::string & ForecastZoneURI() const;
       
-      std::istream & Read(std::istream & is) override;
-      std::ostream & Write(std::ostream & os) const override;
+      std::istream & Read(std::istream & is);
+      std::ostream & Write(std::ostream & os) const;
       
     private:
       std::string  _forecastURI;
