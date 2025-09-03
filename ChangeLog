@@ -1,3 +1,9 @@
+2025-09-03  dwm  <dwm@ria.mcplex.net>
+
+	* classes/src/DwmMcweatherConfigParse.y:
+	Replaced boost::asio::ip::address::from_string() with
+	boost::asio::ip::make_address()
+
 2024-08-01  Daniel W. McRobb  <dwm@spark.mcplex.net>
 
 	* tagged as Mcweather-0.1.20
