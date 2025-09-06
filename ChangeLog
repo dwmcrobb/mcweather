@@ -1,3 +1,12 @@
+2025-09-05  Daniel W. McRobb  <dwm@kiva.mcplex.net>
+
+	* tagged as Mcweather-0.1.22
+
+	* configure, configure.ac, dwm.m4: Updates for FreeBSD 14.  Update
+	versions of build dependencies.
+
+	* packaging/fbsd_manifest.in: Update versions of dependencies.
+
 2025-09-03  dwm  <dwm@ria.mcplex.net>
 
 	* tagged as Mcweather-0.1.21
