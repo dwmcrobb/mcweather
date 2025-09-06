@@ -4708,8 +4708,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
   if test 2 -gt 1 ; then
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for required libDwm version >= 0.9.22" >&5
-printf %s "checking for required libDwm version >= 0.9.22... " >&6; }
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for required libDwm version >= 0.9.56" >&5
+printf %s "checking for required libDwm version >= 0.9.56... " >&6; }
   else
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for required libDwm" >&5
 printf %s "checking for required libDwm... " >&6; }
@@ -4727,7 +4727,7 @@ printf %s "checking for required libDwm... " >&6; }
 
     if test 2 -gt 1 ; then
 
-  dwm_triple_vers_str=0.9.22
+  dwm_triple_vers_str=0.9.56
   dwm_triple_vers_maj=${dwm_triple_vers_str%%\.*}
   dwm_triple_vers_rev=${dwm_triple_vers_str##*.}
   dwm_triple_vers_min=${dwm_triple_vers_str%?$dwm_triple_vers_rev}
@@ -4735,8 +4735,8 @@ printf %s "checking for required libDwm... " >&6; }
   dwm_pkg_version_minimum=$(((dwm_triple_vers_maj * 1000000) + (dwm_triple_vers_min * 1000) + dwm_triple_vers_rev))
 
       if test ${dwm_pkg_version_installed} -lt ${dwm_pkg_version_minimum} ; then
-         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: need at least version 0.9.22 of libDwm!!!" >&5
-printf "%s\n" "need at least version 0.9.22 of libDwm!!!" >&6; }
+         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: need at least version 0.9.56 of libDwm!!!" >&5
+printf "%s\n" "need at least version 0.9.56 of libDwm!!!" >&6; }
 	 exit 1
       fi
     fi
@@ -4750,8 +4750,8 @@ printf "%s\n" "not found!!!" >&6; }
 
 
   if test 2 -gt 1 ; then
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for required libDwmCredence version >= 0.1.27" >&5
-printf %s "checking for required libDwmCredence version >= 0.1.27... " >&6; }
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for required libDwmCredence version >= 0.2.5" >&5
+printf %s "checking for required libDwmCredence version >= 0.2.5... " >&6; }
   else
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for required libDwmCredence" >&5
 printf %s "checking for required libDwmCredence... " >&6; }
@@ -4759,6 +4759,48 @@ printf %s "checking for required libDwmCredence... " >&6; }
   pkg-config --exists libDwmCredence
   if test $? -eq 0 ; then
     dwm_pkg_full_version=$(pkg-config --modversion libDwmCredence)
+
+  dwm_triple_vers_str=$dwm_pkg_full_version
+  dwm_triple_vers_maj=${dwm_triple_vers_str%%\.*}
+  dwm_triple_vers_rev=${dwm_triple_vers_str##*.}
+  dwm_triple_vers_min=${dwm_triple_vers_str%?$dwm_triple_vers_rev}
+  dwm_triple_vers_min=${dwm_triple_vers_min##*.}
+  dwm_pkg_version_installed=$(((dwm_triple_vers_maj * 1000000) + (dwm_triple_vers_min * 1000) + dwm_triple_vers_rev))
+
+    if test 2 -gt 1 ; then
+
+  dwm_triple_vers_str=0.2.5
+  dwm_triple_vers_maj=${dwm_triple_vers_str%%\.*}
+  dwm_triple_vers_rev=${dwm_triple_vers_str##*.}
+  dwm_triple_vers_min=${dwm_triple_vers_str%?$dwm_triple_vers_rev}
+  dwm_triple_vers_min=${dwm_triple_vers_min##*.}
+  dwm_pkg_version_minimum=$(((dwm_triple_vers_maj * 1000000) + (dwm_triple_vers_min * 1000) + dwm_triple_vers_rev))
+
+      if test ${dwm_pkg_version_installed} -lt ${dwm_pkg_version_minimum} ; then
+         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: need at least version 0.2.5 of libDwmCredence!!!" >&5
+printf "%s\n" "need at least version 0.2.5 of libDwmCredence!!!" >&6; }
+	 exit 1
+      fi
+    fi
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: found version ${dwm_pkg_full_version}" >&5
+printf "%s\n" "found version ${dwm_pkg_full_version}" >&6; }
+  else
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: not found!!!" >&5
+printf "%s\n" "not found!!!" >&6; }
+    exit 1
+  fi
+
+
+  if test 2 -gt 1 ; then
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for required libDwmWebUtils version >= 0.1.27" >&5
+printf %s "checking for required libDwmWebUtils version >= 0.1.27... " >&6; }
+  else
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for required libDwmWebUtils" >&5
+printf %s "checking for required libDwmWebUtils... " >&6; }
+  fi
+  pkg-config --exists libDwmWebUtils
+  if test $? -eq 0 ; then
+    dwm_pkg_full_version=$(pkg-config --modversion libDwmWebUtils)
 
   dwm_triple_vers_str=$dwm_pkg_full_version
   dwm_triple_vers_maj=${dwm_triple_vers_str%%\.*}
@@ -4777,50 +4819,8 @@ printf %s "checking for required libDwmCredence... " >&6; }
   dwm_pkg_version_minimum=$(((dwm_triple_vers_maj * 1000000) + (dwm_triple_vers_min * 1000) + dwm_triple_vers_rev))
 
       if test ${dwm_pkg_version_installed} -lt ${dwm_pkg_version_minimum} ; then
-         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: need at least version 0.1.27 of libDwmCredence!!!" >&5
-printf "%s\n" "need at least version 0.1.27 of libDwmCredence!!!" >&6; }
-	 exit 1
-      fi
-    fi
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: found version ${dwm_pkg_full_version}" >&5
-printf "%s\n" "found version ${dwm_pkg_full_version}" >&6; }
-  else
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: not found!!!" >&5
-printf "%s\n" "not found!!!" >&6; }
-    exit 1
-  fi
-
-
-  if test 2 -gt 1 ; then
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for required libDwmWebUtils version >= 0.1.24" >&5
-printf %s "checking for required libDwmWebUtils version >= 0.1.24... " >&6; }
-  else
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for required libDwmWebUtils" >&5
-printf %s "checking for required libDwmWebUtils... " >&6; }
-  fi
-  pkg-config --exists libDwmWebUtils
-  if test $? -eq 0 ; then
-    dwm_pkg_full_version=$(pkg-config --modversion libDwmWebUtils)
-
-  dwm_triple_vers_str=$dwm_pkg_full_version
-  dwm_triple_vers_maj=${dwm_triple_vers_str%%\.*}
-  dwm_triple_vers_rev=${dwm_triple_vers_str##*.}
-  dwm_triple_vers_min=${dwm_triple_vers_str%?$dwm_triple_vers_rev}
-  dwm_triple_vers_min=${dwm_triple_vers_min##*.}
-  dwm_pkg_version_installed=$(((dwm_triple_vers_maj * 1000000) + (dwm_triple_vers_min * 1000) + dwm_triple_vers_rev))
-
-    if test 2 -gt 1 ; then
-
-  dwm_triple_vers_str=0.1.24
-  dwm_triple_vers_maj=${dwm_triple_vers_str%%\.*}
-  dwm_triple_vers_rev=${dwm_triple_vers_str##*.}
-  dwm_triple_vers_min=${dwm_triple_vers_str%?$dwm_triple_vers_rev}
-  dwm_triple_vers_min=${dwm_triple_vers_min##*.}
-  dwm_pkg_version_minimum=$(((dwm_triple_vers_maj * 1000000) + (dwm_triple_vers_min * 1000) + dwm_triple_vers_rev))
-
-      if test ${dwm_pkg_version_installed} -lt ${dwm_pkg_version_minimum} ; then
-         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: need at least version 0.1.24 of libDwmWebUtils!!!" >&5
-printf "%s\n" "need at least version 0.1.24 of libDwmWebUtils!!!" >&6; }
+         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: need at least version 0.1.27 of libDwmWebUtils!!!" >&5
+printf "%s\n" "need at least version 0.1.27 of libDwmWebUtils!!!" >&6; }
 	 exit 1
       fi
     fi
