@@ -1,7 +1,7 @@
 //===========================================================================
 // @(#) $DwmPath$
 //===========================================================================
-//  Copyright (c) Daniel W. McRobb 2022
+//  Copyright (c) Daniel W. McRobb 2022, 2025
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -403,7 +403,7 @@ int main(int argc, char *argv[])
   Credence::Peer  peer;
 
   if (args.Get<'v'>()) {
-    std::cout << Mcweather::Version.Version() << '\n';
+    std::cout << Mcweather::version_info.data_view() << '\n';
     return 0;
   }
   else if (peer.Connect(args.Get<'s'>(), 2124)) {

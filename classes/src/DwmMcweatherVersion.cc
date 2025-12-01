@@ -1,7 +1,7 @@
 //===========================================================================
 // @(#) $DwmPath$
 //===========================================================================
-//  Copyright (c) Daniel W. McRobb 2022
+//  Copyright (c) Daniel W. McRobb 2022, 2025
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -39,17 +39,4 @@
 //!  \brief Dwm::Mcweather::Version implementation
 //---------------------------------------------------------------------------
 
-#include <string>
-#include "DwmGitVersion.hh"
 #include "DwmMcweatherVersion.hh"
-
-namespace Dwm {
-
-  namespace Mcweather {
-
-    const GitVersion  Version("@(#) libDwmMcweather-" DWM_MCWEATHER_VERSION);
-    
-  }  // namespace Mcweather
-
-}  // namespace Dwm
-

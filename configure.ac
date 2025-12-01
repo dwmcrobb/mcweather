@@ -92,6 +92,9 @@ AC_SUBST(CXXFLAGS)
 
 DWM_CHECK_LIBSTDCPPFS
 
+DWM_WHAT_STATUS=`./getvers.sh -S`
+AC_SUBST(DWM_WHAT_STATUS)
+
 BUILD_DOCS=""
 AC_ARG_ENABLE([docs],[AS_HELP_STRING([--enable-docs],[build documentation])],
 	      [BUILD_DOCS="yes"], [])

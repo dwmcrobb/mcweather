@@ -1,7 +1,7 @@
 //===========================================================================
 // @(#) $DwmPath$
 //===========================================================================
-//  Copyright (c) Daniel W. McRobb 2022
+//  Copyright (c) Daniel W. McRobb 2022, 2025
 //  All rights reserved.
 //
 //  Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,7 @@
 #include "DwmMcweatherCurrentConditions.hh"
 #include "DwmMcweatherServer.hh"
 #include "DwmMcweatherWeatherFetcher.hh"
+#include "DwmMcweatherVersion.hh"
 
 using namespace std;
 using namespace Dwm;
