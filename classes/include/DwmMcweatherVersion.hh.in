@@ -52,7 +52,7 @@ namespace Dwm {
     inline constexpr Dwm::What::Info __attribute__((used))
     version_info(DWM_WHAT_TYPE_EXE DWM_WHAT_TYPE_LIB, @DWM_WHAT_STATUS@,
                  "Mcweather", "@DWM_VERSION@",
-                 "Daniel McRobb 2025 " DWM_WHAT_SYM_CYCLONE, "mcplex.net");
+                 DWM_WHAT_SYM_COPYRIGHT " Daniel McRobb 2025 " DWM_WHAT_SYM_CYCLONE, "mcplex.net");
     
   }  // namespace Mcweather
 

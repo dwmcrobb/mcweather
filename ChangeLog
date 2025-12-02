@@ -1,3 +1,10 @@
+2025-12-02  Daniel W. McRobb  <dwm@spark.mcplex.net>
+
+	* tagged as Mcweather-0.1.24
+
+	* classes/include/DwmMcweatherVersion.hh.in: Tweak version
+	information.
+
 2025-11-30  Daniel W. McRobb  <dwm@kiva.mcplex.net>
 
 	* tagged as Mcweather-0.1.23
